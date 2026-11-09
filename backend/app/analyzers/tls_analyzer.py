@@ -134,7 +134,7 @@ class TLSAnalyzer:
                     chain_ders = [leaf_der]
                     verified_chain = ssock.get_verified_chain() if hasattr(ssock, "get_verified_chain") else None
                     if verified_chain:
-                        chain_ders = [c.public_bytes(serialization.Encoding.DER) for c in verified_chain]
+                        chain_ders = [c.public_bytes(serialization.Encoding.DER) if hasattr(c, "public_bytes") else c for c in verified_chain]
                     return chain_ders, trust_result, True
         except Exception:
             return None, "unreachable", False

@@ -190,17 +190,14 @@ class SafeHTTPClient:
             if parsed.scheme == "https":
                 context = ssl.create_default_context()
                 conn = http.client.HTTPSConnection(
-                    connect_ip,
+                    parsed.hostname,
                     port=port,
                     timeout=REQUEST_TIMEOUT,
                     context=context
                 )
-                # Anti-rebinding: set SNI hostname
-                conn._tunnel_host = None
-                conn.set_tunnel = lambda *a, **k: None
             else:
                 conn = http.client.HTTPConnection(
-                    connect_ip,
+                    parsed.hostname,
                     port=port,
                     timeout=REQUEST_TIMEOUT
                 )
