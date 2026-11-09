@@ -94,3 +94,58 @@ export async function fetchPlatformStats() {
   if (!res.ok) throw new Error("Failed to load platform stats");
   return res.json();
 }
+
+
+/* ── Option 1: AI Settings ──────────────────────────────────────────────── */
+export async function fetchAISettings() {
+  const res = await fetch(`${API_BASE}/api/settings/ai`);
+  if (!res.ok) throw new Error("Failed to load AI settings");
+  return res.json();
+}
+
+export async function updateAISettings(apiKey?: string, model?: string) {
+  const res = await fetch(`${API_BASE}/api/settings/ai`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ api_key: apiKey, model })
+  });
+  if (!res.ok) throw new Error("Failed to update AI settings");
+  return res.json();
+}
+
+export async function testAISettings() {
+  const res = await fetch(`${API_BASE}/api/settings/ai/test`, {
+    method: "POST"
+  });
+  if (!res.ok) throw new Error("Failed to test AI connection");
+  return res.json();
+}
+
+/* ── Option 2: Quishing (QR Code Phishing) ────────────────────────────────── */
+export async function decodeQRCode(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE}/api/scan/qr`, {
+    method: "POST",
+    body: formData
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Failed to decode QR code");
+  }
+  return res.json();
+}
+
+/* ── Option 3: Bulk / Batch Scans ────────────────────────────────────────── */
+export async function startBatchScan(urls: string[]) {
+  const res = await fetch(`${API_BASE}/api/scans/batch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ urls })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Failed to start batch scan");
+  }
+  return res.json();
+}

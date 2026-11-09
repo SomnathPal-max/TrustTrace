@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { anyValue } = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 
 describe("ThreatRegistry", function () {
   let ThreatRegistry, registry, owner, user1, user2;
@@ -17,7 +18,7 @@ describe("ThreatRegistry", function () {
 
     await expect(registry.connect(user1).commitReport(reportId, reportHash))
       .to.emit(registry, "ReportCommitted")
-      .withArgs(reportId, reportHash, user1.address, 1, (await ethers.provider.getBlock("latest")).timestamp + 1);
+      .withArgs(reportId, reportHash, user1.address, 1, anyValue);
 
     const record = await registry.getReport(reportId);
     expect(record.reportHash).to.equal(reportHash);

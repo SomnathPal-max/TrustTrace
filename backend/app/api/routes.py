@@ -2,7 +2,8 @@ import uuid
 import json
 from datetime import datetime, timezone
 from typing import List, Optional
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Query, UploadFile, File
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import settings
@@ -434,3 +435,166 @@ def get_platform_stats(db: Session = Depends(get_db)):
         "blockchain_network": settings.chain_name
     }
 
+
+
+# ── Option 1: AI Settings Endpoints ──────────────────────────────────────────
+
+class AISettingsUpdate(BaseModel):
+    api_key: Optional[str] = None
+    model: Optional[str] = None
+
+
+@router.get("/settings/ai")
+def get_ai_settings():
+    key = settings.gemini_api_key or ""
+    preview = f"{key[:6]}...{key[-4:]}" if len(key) > 10 else ("Configured" if key else "Not Configured")
+    return {
+        "api_key_configured": bool(key),
+        "key_preview": preview,
+        "model": settings.gemini_model or "gemini-flash-latest",
+        "available_models": [
+            "gemini-flash-latest",
+            "gemini-3.8-flash",
+            "gemini-2.5-pro",
+            "gemini-2.5-flash"
+        ]
+    }
+
+
+@router.post("/settings/ai")
+def update_ai_settings(payload: AISettingsUpdate):
+    if payload.api_key is not None:
+        settings.gemini_api_key = payload.api_key.strip()
+    if payload.model is not None and payload.model.strip():
+        settings.gemini_model = payload.model.strip()
+
+    try:
+        import os
+        env_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
+        lines = []
+        if os.path.exists(env_path):
+            with open(env_path, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+        
+        updated_key = False
+        updated_model = False
+        new_lines = []
+        for line in lines:
+            if line.startswith("GEMINI_API_KEY="):
+                new_lines.append(f"GEMINI_API_KEY={settings.gemini_api_key}\n")
+                updated_key = True
+            elif line.startswith("GEMINI_MODEL="):
+                new_lines.append(f"GEMINI_MODEL={settings.gemini_model}\n")
+                updated_model = True
+            else:
+                new_lines.append(line)
+        if not updated_key:
+            new_lines.append(f"GEMINI_API_KEY={settings.gemini_api_key}\n")
+        if not updated_model:
+            new_lines.append(f"GEMINI_MODEL={settings.gemini_model}\n")
+        
+        with open(env_path, "w", encoding="utf-8") as f:
+            f.writelines(new_lines)
+    except Exception:
+        pass
+
+    return get_ai_settings()
+
+
+@router.post("/settings/ai/test")
+def test_ai_settings():
+    if not settings.gemini_api_key:
+        return {"status": "error", "message": "No Gemini API key is configured."}
+    
+    import urllib.request, urllib.error
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{settings.gemini_model}:generateContent?key={settings.gemini_api_key}"
+    req_body = {
+        "contents": [{"parts": [{"text": "Reply with JSON: {\"status\": \"ok\", \"service\": \"Gemini\"}"}]}],
+        "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}
+    }
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(req_body).encode("utf-8"),
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=10.0) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            return {
+                "status": "success",
+                "model": settings.gemini_model,
+                "message": "Gemini API connection active and responsive."
+            }
+    except urllib.error.HTTPError as e:
+        err_msg = e.read().decode("utf-8") if e.fp else str(e)
+        return {"status": "error", "code": e.code, "message": f"Gemini API returned error {e.code}: {err_msg[:120]}"}
+    except Exception as e:
+        return {"status": "error", "message": f"Connection check failed: {str(e)}"}
+
+
+# ── Option 2: Quishing / QR Phishing Scanner ────────────────────────────────
+
+@router.post("/scan/qr")
+async def scan_qr_code(file: UploadFile = File(...)):
+    """Decodes QR code from uploaded image (Quishing defense) and returns extracted target."""
+    import cv2
+    import numpy as np
+    
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    if img is None:
+        raise HTTPException(status_code=400, detail="Invalid image format or corrupted file.")
+    
+    detector = cv2.QRCodeDetector()
+    data, bbox, _ = detector.detectAndDecode(img)
+    
+    if not data or not data.strip():
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        data, bbox, _ = detector.detectAndDecode(gray)
+    
+    if not data or not data.strip():
+        raise HTTPException(status_code=422, detail="No valid QR code detected in the uploaded image. Please ensure the QR code is clear and well-lit.")
+    
+    target = data.strip()
+    is_url = target.startswith("http://") or target.startswith("https://") or ("." in target and " " not in target)
+    input_type = "url" if is_url else "message"
+    
+    return {
+        "decoded_content": target,
+        "input_type": input_type,
+        "message": "QR code successfully decoded. Proceeding with passive telemetry analysis."
+    }
+
+
+# ── Option 3: Bulk / Batch URL Threat Scanner ───────────────────────────────
+
+class BatchScanRequest(BaseModel):
+    urls: List[str]
+
+
+@router.post("/scans/batch", status_code=202)
+def start_batch_scan(payload: BatchScanRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    """Accepts up to 10 URLs for concurrent passive analysis."""
+    targets = [u.strip() for u in payload.urls if u.strip()][:10]
+    if not targets:
+        raise HTTPException(status_code=400, detail="At least one valid URL must be provided.")
+    
+    batch_jobs = []
+    for url in targets:
+        req = ScanRequest(type="url", value=url, force_refresh=False)
+        report_id = str(uuid.uuid4())
+        job_runner.register_job(report_id, "url", url)
+        background_tasks.add_task(run_scan_pipeline, report_id, req, db)
+        batch_jobs.append({
+            "report_id": report_id,
+            "target": url,
+            "status": "queued",
+            "poll_url": f"/api/scans/{report_id}"
+        })
+    
+    return {
+        "total_targets": len(batch_jobs),
+        "jobs": batch_jobs
+    }

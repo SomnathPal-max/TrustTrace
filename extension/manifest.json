@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "TrustTrace — Link & Scam Detective",
+  "version": "1.0.0",
+  "description": "Enterprise scam and phishing detective powered by 7-layer passive telemetry and EVM proof registry.",
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TrustTrace Link Detective"
+  }
+}

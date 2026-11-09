@@ -2,10 +2,12 @@
 import React, { useState } from "react";
 import {
   Shield, Link2, MessageSquare, Search, RefreshCw,
-  CheckCircle2, Circle, Loader2, Sparkles, Activity
+  QrCode, Layers, UploadCloud, Loader2, Sparkles, Activity,
+  CheckCircle, AlertTriangle, ExternalLink, ChevronRight
 } from "lucide-react";
-import { startScan, pollScan } from "@/lib/api";
+import { startScan, pollScan, decodeQRCode, startBatchScan } from "@/lib/api";
 import { Report } from "@/types";
+import { defang } from "@/lib/defang";
 
 const SCAN_STEPS = [
   "Validating link safety (SSRF Guard)",
@@ -22,37 +24,51 @@ interface ScannerProps {
 }
 
 export default function Scanner({ onReport }: ScannerProps) {
-  const [tab, setTab] = useState<"url" | "message">("url");
+  const [tab, setTab] = useState<"url" | "message" | "qr" | "batch">("url");
   const [value, setValue] = useState("");
   const [scanning, setScanning] = useState(false);
   const [stepIdx, setStepIdx] = useState(0);
   const [stepName, setStepName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const handleScan = async () => {
-    const v = value.trim();
-    if (!v) { setError("Please enter a URL or message to analyze."); return; }
-    setScanning(true); setError(null); setStepIdx(0); setStepName(SCAN_STEPS[0]);
+  // QR state
+  const [qrFile, setQrFile] = useState<File | null>(null);
+  const [qrDecoding, setQrDecoding] = useState(false);
+  const [qrDecodedText, setQrDecodedText] = useState<string | null>(null);
+
+  // Batch state
+  const [batchInput, setBatchInput] = useState("");
+  const [batchRunning, setBatchRunning] = useState(false);
+  const [batchResults, setBatchResults] = useState<Array<{ report_id: string; target: string; status: string; report?: Report }>>([]);
+
+  const executeSingleScan = async (scanType: "url" | "message", scanVal: string) => {
+    setScanning(true);
+    setError(null);
+    setStepIdx(0);
+    setStepName(SCAN_STEPS[0]);
 
     try {
-      const init = await startScan(tab, v, false);
+      const init = await startScan(scanType, scanVal, false);
       const rid = init.report_id;
 
       const poll = setInterval(async () => {
         try {
           const s = await pollScan(rid);
           if (s.status === "failed") {
-            clearInterval(poll); setScanning(false);
+            clearInterval(poll);
+            setScanning(false);
             setError(s.error || "Analysis encountered an issue.");
           } else if (s.status === "complete") {
-            clearInterval(poll); setScanning(false);
+            clearInterval(poll);
+            setScanning(false);
             onReport(s.report);
           } else {
             setStepName(s.progress_step || "Analyzing...");
             setStepIdx(s.step_index || 1);
           }
         } catch {
-          clearInterval(poll); setScanning(false);
+          clearInterval(poll);
+          setScanning(false);
           setError("Lost connection to the analysis engine.");
         }
       }, 600);
@@ -62,13 +78,83 @@ export default function Scanner({ onReport }: ScannerProps) {
     }
   };
 
+  const handleScan = () => {
+    const v = value.trim();
+    if (!v) {
+      setError("Please enter a URL or message to analyze.");
+      return;
+    }
+    executeSingleScan(tab as "url" | "message", v);
+  };
+
+  const handleQRFile = async (file: File) => {
+    setQrFile(file);
+    setQrDecoding(true);
+    setError(null);
+    setQrDecodedText(null);
+
+    try {
+      const res = await decodeQRCode(file);
+      setQrDecodedText(res.decoded_content);
+      // Auto-trigger scan on the extracted target
+      executeSingleScan(res.input_type, res.decoded_content);
+    } catch (err: any) {
+      setError(err.message || "Failed to decode QR code.");
+    } finally {
+      setQrDecoding(false);
+    }
+  };
+
+  const handleBatchScan = async () => {
+    const lines = batchInput.split("\n").map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) {
+      setError("Please enter at least one URL (one per line, up to 10).");
+      return;
+    }
+    setBatchRunning(true);
+    setError(null);
+
+    try {
+      const init = await startBatchScan(lines);
+      const initialJobs = init.jobs.map((j: any) => ({
+        report_id: j.report_id,
+        target: j.target,
+        status: "queued"
+      }));
+      setBatchResults(initialJobs);
+
+      // Poll each job
+      initialJobs.forEach((job: any) => {
+        const interval = setInterval(async () => {
+          try {
+            const s = await pollScan(job.report_id);
+            if (s.status === "complete" || s.status === "failed") {
+              clearInterval(interval);
+              setBatchResults(prev => prev.map(item => item.report_id === job.report_id ? {
+                ...item,
+                status: s.status,
+                report: s.report
+              } : item));
+            }
+          } catch {
+            clearInterval(interval);
+          }
+        }, 1000);
+      });
+    } catch (err: any) {
+      setError(err.message || "Failed to execute batch scan.");
+    } finally {
+      setBatchRunning(false);
+    }
+  };
+
   return (
     <section id="scanner" className="scroll-mt-20">
       <div className="max-w-3xl mx-auto">
-        <div className="relative bg-white dark:bg-[#121215] rounded-3xl border border-zinc-200 dark:border-zinc-800/80 shadow-2xl shadow-zinc-200/50 dark:shadow-black/60 overflow-hidden transition-all duration-300">
+        <div className="cyber-card relative bg-white dark:bg-[#121215] rounded-3xl border border-zinc-200 dark:border-zinc-800/80 shadow-2xl shadow-zinc-200/50 dark:shadow-black/60 overflow-hidden transition-all duration-300">
           
           {/* Animated Scanning Radar Beam */}
-          {scanning && <div className="scanner-radar-beam" />}
+          {(scanning || qrDecoding) && <div className="scanner-radar-beam" />}
 
           {/* Real-Time Stepper Progress Bar */}
           {scanning && (
@@ -81,22 +167,24 @@ export default function Scanner({ onReport }: ScannerProps) {
           )}
 
           {/* Tab Switcher */}
-          <div className="flex border-b border-zinc-200 dark:border-zinc-800/80">
+          <div className="grid grid-cols-2 sm:grid-cols-4 border-b border-zinc-200 dark:border-zinc-800/80">
             {[
-              { id: "url" as const, label: "Live Link Scanner", icon: Link2 },
-              { id: "message" as const, label: "Scam Message Detective", icon: MessageSquare },
+              { id: "url" as const, label: "Live Link", icon: Link2 },
+              { id: "message" as const, label: "Message Scam", icon: MessageSquare },
+              { id: "qr" as const, label: "QR Quishing", icon: QrCode },
+              { id: "batch" as const, label: "Bulk Audit", icon: Layers },
             ].map(t => (
               <button
                 key={t.id}
                 onClick={() => { setTab(t.id); setError(null); }}
-                className={`flex-1 flex items-center justify-center gap-2.5 py-4 text-xs sm:text-sm font-bold transition-all relative ${
+                className={`flex items-center justify-center gap-2 py-3.5 px-2 text-xs sm:text-sm font-bold transition-all relative ${
                   tab === t.id
                     ? "text-brand-600 dark:text-emerald-400 bg-brand-50/40 dark:bg-emerald-950/20"
                     : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/30"
                 }`}
               >
-                <t.icon className="w-4 h-4" />
-                {t.label}
+                <t.icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{t.label}</span>
                 {tab === t.id && (
                   <span className="absolute bottom-0 inset-x-0 h-0.5 bg-brand-600 dark:bg-emerald-400 shadow-sm" />
                 )}
@@ -104,9 +192,10 @@ export default function Scanner({ onReport }: ScannerProps) {
             ))}
           </div>
 
-          {/* Input Form */}
+          {/* Form Content */}
           <div className="p-6 sm:p-8 space-y-5">
-            {tab === "url" ? (
+            {/* 1. URL SCAN */}
+            {tab === "url" && (
               <div className="space-y-2.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
@@ -145,7 +234,10 @@ export default function Scanner({ onReport }: ScannerProps) {
                   Strictly passive — zero script execution, response capped at 200KB, multi-layer SSRF defense.
                 </p>
               </div>
-            ) : (
+            )}
+
+            {/* 2. MESSAGE SCAN */}
+            {tab === "message" && (
               <div className="space-y-2.5">
                 <div className="flex justify-between items-center">
                   <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
@@ -177,12 +269,144 @@ export default function Scanner({ onReport }: ScannerProps) {
               </div>
             )}
 
+            {/* 3. QR QUISHING SCAN (Option 2) */}
+            {tab === "qr" && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                    Quishing Defense: Upload QR Code Image
+                  </label>
+                  <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200/50 dark:border-emerald-800/50">
+                    OpenCV Computer Vision
+                  </span>
+                </div>
+
+                <div
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      handleQRFile(e.dataTransfer.files[0]);
+                    }
+                  }}
+                  className="border-2 border-dashed border-zinc-200 dark:border-zinc-800 hover:border-brand-500 dark:hover:border-brand-500 rounded-3xl p-8 text-center transition-colors bg-zinc-50/50 dark:bg-[#18181c]/50 relative group cursor-pointer"
+                  onClick={() => document.getElementById("qr-input")?.click()}
+                >
+                  <input
+                    id="qr-input"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        handleQRFile(e.target.files[0]);
+                      }
+                    }}
+                  />
+                  <div className="p-3 bg-brand-50 dark:bg-brand-950/50 rounded-2xl text-brand-600 dark:text-brand-400 inline-block mb-3 group-hover:scale-110 transition-transform">
+                    {qrDecoding ? <Loader2 className="w-8 h-8 animate-spin" /> : <QrCode className="w-8 h-8" />}
+                  </div>
+                  <h4 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                    {qrDecoding ? "Decoding QR Matrix..." : "Drop QR Code Image Here"}
+                  </h4>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 max-w-sm mx-auto">
+                    Supports PNG, JPG, WebP. Automatically extracts embedded phishing URL and executes 7-layer passive inspection.
+                  </p>
+                </div>
+
+                {qrDecodedText && (
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 text-xs animate-fade-in flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-emerald-800 dark:text-emerald-300 block mb-0.5">Decoded QR Destination:</span>
+                      <code className="font-mono text-zinc-700 dark:text-zinc-300">{defang(qrDecodedText)}</code>
+                    </div>
+                    <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">Inspecting Target →</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 4. BULK / BATCH SCAN (Option 3) */}
+            {tab === "batch" && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                    Bulk Domain Audit (Up to 10 Targets)
+                  </label>
+                  <span className="text-[11px] font-mono text-zinc-500">
+                    1 URL per line
+                  </span>
+                </div>
+
+                <textarea
+                  rows={4}
+                  value={batchInput}
+                  onChange={(e) => setBatchInput(e.target.value)}
+                  placeholder="https://sbi.co.in&#10;https://expired.badssl.com&#10;http://sbi-kyc-update.com/login"
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-[#18181c] border border-zinc-200 dark:border-zinc-700/80 rounded-2xl text-xs font-mono text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-brand-500 dark:focus:ring-emerald-500 focus:outline-none transition-all shadow-inner"
+                />
+
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-zinc-500">
+                    {batchInput.split("\n").filter(Boolean).length} targets queued
+                  </span>
+                  <button
+                    onClick={handleBatchScan}
+                    disabled={batchRunning}
+                    className="px-6 py-2.5 bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-500 hover:to-emerald-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2"
+                  >
+                    {batchRunning ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Layers className="w-3.5 h-3.5" />}
+                    {batchRunning ? "Dispatching..." : "Launch Batch Audit"}
+                  </button>
+                </div>
+
+                {/* Batch Comparative Table */}
+                {batchResults.length > 0 && (
+                  <div className="mt-4 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden animate-fade-in text-xs">
+                    <div className="bg-zinc-100 dark:bg-[#18181c] px-3.5 py-2 font-bold text-zinc-700 dark:text-zinc-300 border-b border-zinc-200 dark:border-zinc-800">
+                      Batch Inspection Progress
+                    </div>
+                    <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                      {batchResults.map((job) => (
+                        <div key={job.report_id} className="p-3 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-[#18181c]/50">
+                          <span className="font-mono text-zinc-800 dark:text-zinc-200 truncate max-w-xs">
+                            {defang(job.target)}
+                          </span>
+                          <div className="flex items-center gap-3">
+                            {job.status === "complete" && job.report ? (
+                              <>
+                                <span className="font-bold px-2 py-0.5 rounded text-[11px] bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                  {job.report.risk_label} ({job.report.risk_score})
+                                </span>
+                                <button
+                                  onClick={() => onReport(job.report!)}
+                                  className="text-brand-600 dark:text-brand-400 font-bold hover:underline flex items-center gap-1"
+                                >
+                                  View
+                                  <ChevronRight className="w-3 h-3" />
+                                </button>
+                              </>
+                            ) : (
+                              <span className="flex items-center gap-1.5 text-zinc-400">
+                                <Loader2 className="w-3 h-3 animate-spin text-brand-500" />
+                                Analyzing...
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Error Notification */}
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/60 rounded-2xl text-xs sm:text-sm text-red-700 dark:text-red-400 animate-fade-in flex items-start gap-2.5">
                 <span className="p-1 rounded-md bg-red-100 dark:bg-red-900/40 shrink-0">⚠️</span>
                 <div>
-                  <span className="font-bold block mb-0.5">Analysis Notice:</span>
+                  <span className="font-bold block mb-0.5">Notice:</span>
                   {error}
                 </div>
               </div>
@@ -200,41 +424,28 @@ export default function Scanner({ onReport }: ScannerProps) {
                     Step {stepIdx + 1} of {SCAN_STEPS.length}
                   </span>
                 </div>
-
                 <div className="space-y-1.5">
-                  {SCAN_STEPS.map((step, i) => {
-                    const done = i < stepIdx;
-                    const current = i === stepIdx;
-                    return (
-                      <div
-                        key={step}
-                        className={`flex items-center gap-3 py-2 px-3 rounded-xl transition-all ${
-                          current
-                            ? "bg-brand-50 dark:bg-emerald-950/30 border border-brand-200/50 dark:border-emerald-800/50 translate-x-1"
-                            : ""
-                        }`}
-                      >
-                        {done ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                        ) : current ? (
-                          <Loader2 className="w-4 h-4 text-brand-600 dark:text-emerald-400 animate-spin shrink-0" />
-                        ) : (
-                          <Circle className="w-4 h-4 text-zinc-300 dark:text-zinc-700 shrink-0" />
-                        )}
-                        <span
-                          className={`text-xs sm:text-sm ${
-                            done
-                              ? "text-zinc-400 dark:text-zinc-500"
-                              : current
-                              ? "text-brand-800 dark:text-emerald-300 font-bold"
-                              : "text-zinc-400 dark:text-zinc-600"
-                          }`}
-                        >
-                          {step}
-                        </span>
-                      </div>
-                    );
-                  })}
+                  {SCAN_STEPS.map((step, idx) => (
+                    <div
+                      key={idx}
+                      className={`flex items-center gap-2.5 px-3 py-1.5 rounded-xl text-xs transition-all ${
+                        idx === stepIdx
+                          ? "bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-emerald-300 font-bold border border-brand-200/60 dark:border-brand-800/60"
+                          : idx < stepIdx
+                          ? "text-emerald-600 dark:text-emerald-400/80 font-medium"
+                          : "text-zinc-400 dark:text-zinc-600"
+                      }`}
+                    >
+                      {idx < stepIdx ? (
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                      ) : idx === stepIdx ? (
+                        <Loader2 className="w-3.5 h-3.5 text-brand-500 animate-spin shrink-0" />
+                      ) : (
+                        <div className="w-3.5 h-3.5 rounded-full border border-zinc-300 dark:border-zinc-700 shrink-0" />
+                      )}
+                      <span className="truncate">{step}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

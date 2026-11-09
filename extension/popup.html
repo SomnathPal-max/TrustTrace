@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TrustTrace Detective</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">🛡️</div>
+        <div>
+          <span class="logo-title">TrustTrace</span>
+          <span class="badge">SOC v1.0</span>
+        </div>
+      </div>
+      <span class="env-tag">Local Engine</span>
+    </header>
+
+    <!-- Target Info -->
+    <div class="target-card">
+      <div class="target-label">Active Tab Target</div>
+      <div id="targetUrl" class="target-url">Detecting current tab...</div>
+    </div>
+
+    <!-- Actions -->
+    <button id="scanBtn" class="btn btn-primary">
+      <span id="btnIcon">⚡</span>
+      <span id="btnText">Scan Current Tab</span>
+    </button>
+
+    <!-- Progress / Loading -->
+    <div id="progressArea" class="progress-area hidden">
+      <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <div id="progressStep" class="progress-step">Analyzing 7-layer telemetry...</div>
+    </div>
+
+    <!-- Error notice -->
+    <div id="errorBox" class="alert alert-error hidden"></div>
+
+    <!-- Results Section -->
+    <div id="resultCard" class="result-card hidden">
+      <div class="result-header">
+        <div id="riskLabel" class="risk-label">Low Risk</div>
+        <div class="score-box">
+          <span class="score-label">Score</span>
+          <span id="riskScore" class="score-value">0</span>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric">
+          <span class="m-label">Findings</span>
+          <span id="findingsCount" class="m-val">0</span>
+        </div>
+        <div class="metric">
+          <span class="m-label">Coverage</span>
+          <span id="coveragePercent" class="m-val">100%</span>
+        </div>
+        <div class="metric">
+          <span class="m-label">Web3 Proof</span>
+          <span id="web3Status" class="m-val">Pending</span>
+        </div>
+      </div>
+
+      <p id="aiSummary" class="ai-summary"></p>
+
+      <a id="viewFullBtn" href="http://localhost:3000#results" target="_blank" class="btn btn-secondary">
+        View Full Audit in TrustTrace Dashboard ↗
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Passive 7-layer inspection · No scripts executed
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

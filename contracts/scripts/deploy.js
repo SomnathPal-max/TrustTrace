@@ -1,4 +1,6 @@
 const hre = require("hardhat");
+const fs = require("fs");
+const path = require("path");
 
 async function main() {
   console.log("Deploying ThreatRegistry smart contract to network:", hre.network.name);
@@ -15,14 +17,41 @@ async function main() {
   await registry.waitForDeployment();
 
   const contractAddress = await registry.getAddress();
+  const txHash = registry.deploymentTransaction()?.hash || "N/A";
+
+  let explorerUrl = "";
+  if (hre.network.name === "sepolia") {
+    explorerUrl = `https://sepolia.etherscan.io/address/${contractAddress}`;
+  } else if (hre.network.name === "amoy") {
+    explorerUrl = `https://amoy.polygonscan.com/address/${contractAddress}`;
+  } else {
+    explorerUrl = `http://localhost:8545 (Local Node)`;
+  }
+
   console.log("\n=======================================================");
-  console.log("ThreatRegistry deployed successfully!");
+  console.log("ThreatRegistry Deployed Successfully!");
   console.log("Contract Address:", contractAddress);
+  console.log("Deployment Tx:", txHash);
   console.log("Network:", hre.network.name);
+  console.log("Block Explorer:", explorerUrl);
   console.log("=======================================================\n");
-  console.log("To configure backend and frontend with this contract, set:");
-  console.log(`WEB3_CONTRACT_ADDRESS=${contractAddress}`);
-  console.log(`NEXT_PUBLIC_CONTRACT_ADDRESS=${contractAddress}`);
+
+  // Auto-update .env
+  try {
+    const envPath = path.resolve(__dirname, "../../.env");
+    if (fs.existsSync(envPath)) {
+      let content = fs.readFileSync(envPath, "utf-8");
+      if (content.includes("CONTRACT_ADDRESS=")) {
+        content = content.replace(/CONTRACT_ADDRESS=.*/g, `CONTRACT_ADDRESS=${contractAddress}`);
+      } else {
+        content += `\nCONTRACT_ADDRESS=${contractAddress}\n`;
+      }
+      fs.writeFileSync(envPath, content, "utf-8");
+      console.log("Updated CONTRACT_ADDRESS in .env successfully!");
+    }
+  } catch (err) {
+    console.warn("Could not auto-update .env:", err.message);
+  }
 }
 
 main().catch((error) => {

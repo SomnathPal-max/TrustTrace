@@ -9,6 +9,7 @@ import {
 import { Report, RiskLabel, Finding } from "@/types";
 import { defang } from "@/lib/defang";
 import { commitReport, verifyReport, tamperReport, restoreReport } from "@/lib/api";
+import VisualRedirectGraph from "@/components/VisualRedirectGraph";
 
 /* ── Risk Helpers ────────────────────────────────────────────────────────── */
 
@@ -330,6 +331,9 @@ export default function ReportView({ report }: { report: Report }) {
           </SectionCard>
         )}
       </div>
+
+      {/* ── Visual Redirect & Network Topology Graph (Option 4) ──────── */}
+      <VisualRedirectGraph report={report} />
 
       {/* ── 6. Web3 Verification ──────────────────────────────────────── */}
       <SectionCard>
