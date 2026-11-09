@@ -2,19 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme transition ────────────────────────────────────────────────────── */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* ── Light Mode ──────────────────────────────────────────────────────────── */
 :root {
-  color-scheme: light dark;
+  --bg-primary: 248 250 252;   /* slate-50  */
+  --bg-surface: 255 255 255;   /* white     */
+  --fg-primary: 15 23 42;      /* slate-900 */
+  --fg-muted:   100 116 139;   /* slate-500 */
+  --border:     226 232 240;   /* slate-200 */
 }
 
-html.dark {
-  color-scheme: dark;
-}
-
-html:not(.dark) {
-  color-scheme: light;
+/* ── Dark Mode ───────────────────────────────────────────────────────────── */
+.dark {
+  --bg-primary: 2 6 23;        /* slate-950 */
+  --bg-surface: 15 23 42;      /* slate-900 */
+  --fg-primary: 241 245 249;   /* slate-100 */
+  --fg-muted:   148 163 184;   /* slate-400 */
+  --border:     51 65 85;      /* slate-700 */
 }
 
 body {
+  color: rgb(var(--fg-primary));
+  background: rgb(var(--bg-primary));
   min-height: 100vh;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--fg-muted) / 0.3);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--fg-muted) / 0.5); }
+
+/* ── Smooth scroll ───────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ── Selection ───────────────────────────────────────────────────────────── */
+::selection { background: #6366f1; color: #fff; }
+
+/* ── Focus ring ──────────────────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+}
+
+/* ── Animated gradient for hero ──────────────────────────────────────────── */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.hero-gradient {
+  background: linear-gradient(-45deg, #eef2ff, #e0e7ff, #f0fdf4, #f0f9ff);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+.dark .hero-gradient {
+  background: linear-gradient(-45deg, #0f172a, #1e1b4b, #042f2e, #0c1220);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
 }
