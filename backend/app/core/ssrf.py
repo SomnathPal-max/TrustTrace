@@ -12,6 +12,8 @@ ALLOWED_PORTS = {80, 443, 8080, 8443}
 CGNAT_NET = ipaddress.ip_network("100.64.0.0/10")
 # Cloud Metadata
 CLOUD_METADATA_IP = ipaddress.ip_address("169.254.169.254")
+# NAT64 Well-Known Prefix (RFC 6052)
+NAT64_NET = ipaddress.ip_network("64:ff9b::/96")
 
 @dataclass
 class SSRFValidationResult:
@@ -107,6 +109,10 @@ class SSRFGuard:
         # Unwrap IPv4-mapped IPv6 address (::ffff:127.0.0.1)
         if isinstance(ip_obj, ipaddress.IPv6Address) and ip_obj.ipv4_mapped:
             ip_obj = ip_obj.ipv4_mapped
+
+        # Unwrap NAT64 well-known prefix (64:ff9b::/96) to evaluate embedded IPv4
+        if isinstance(ip_obj, ipaddress.IPv6Address) and ip_obj in NAT64_NET:
+            ip_obj = ipaddress.IPv4Address(ip_obj.packed[-4:])
 
         # 1. Loopback (127.0.0.0/8, ::1)
         if ip_obj.is_loopback or str(ip_obj) == "0.0.0.0":
