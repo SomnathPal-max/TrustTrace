@@ -1,7 +1,6 @@
 # TrustTrace: Link & Scam Detective
 **AI-Powered Web Threat Detection & Digital Trust Intelligence**  
-*HackMatrix 2026 — Team APEX WARCODE (`HM-6FC44F`)*  
-*Team Members: Somnath Pal (Leader), Sreya Roy, Sudhansu Kumar, Sukriti Singh*  
+*Team APEX WARCODE*    
 *Domains: AI · Cybersecurity · Web3*
 
 ---
