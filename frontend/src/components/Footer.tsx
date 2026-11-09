@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Shield, Lock, Database, Cpu, ExternalLink, Terminal, Heart } from "lucide-react";
+import { Shield, Lock, Database, Cpu, ExternalLink, Terminal } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -68,32 +68,43 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Developer & Hackathon Info */}
+          {/* Developer Resources */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 mb-3">
-              HackMatrix 2026
+              Developer Resources
             </h3>
             <div className="space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
               <p className="font-semibold text-zinc-900 dark:text-zinc-200">
-                Team APEX WARCODE
+                REST API & Smart Contracts
               </p>
-              <p className="text-xs font-mono text-zinc-500">
-                Team Code: HM-6FC44F
+              <p className="text-xs text-zinc-500">
+                EVM ThreatRegistry · 7-Layer Passive Telemetry
               </p>
-              <p className="text-xs leading-relaxed text-zinc-500">
-                Somnath Pal (Lead) · Sreya Roy · Sudhansu Kumar · Sukriti Singh
-              </p>
-              <div className="pt-2">
-                <a
-                  href="http://localhost:8000/docs"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
-                >
-                  <Terminal className="w-3.5 h-3.5" />
-                  FastAPI OpenAPI Docs
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+              <div className="pt-2 space-y-2">
+                <div>
+                  <a
+                    href="http://localhost:8000/docs"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    <Terminal className="w-3.5 h-3.5" />
+                    FastAPI OpenAPI Docs
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="http://localhost:8000/redoc"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    <Terminal className="w-3.5 h-3.5" />
+                    API Reference (ReDoc)
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -110,10 +121,10 @@ export default function Footer() {
 
           <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
             <p>
-              © {new Date().getFullYear()} TrustTrace · HackMatrix 2026. All rights reserved.
+              © {new Date().getFullYear()} TrustTrace Platform. All rights reserved.
             </p>
             <p className="flex items-center gap-1">
-              Engineered with <Heart className="w-3 h-3 text-red-500 fill-red-500" /> by Team APEX WARCODE
+              Engineered for Enterprise Scam Detection & Web Threat Defense
             </p>
           </div>
         </div>
