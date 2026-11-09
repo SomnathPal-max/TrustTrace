@@ -174,3 +174,54 @@ export interface DemoSample {
   expected_label: string;
   description?: string;
 }
+
+export interface ThreatFeedItem {
+  id: string;
+  indicator: string;
+  raw_value: string;
+  type: string;
+  category: string;
+  threat_type: string;
+  source: string;
+  date_added: string;
+  confidence: string;
+  status: string;
+}
+
+export interface TrackedCampaign {
+  campaign_id: string;
+  name: string;
+  severity: string;
+  target_sector: string;
+  target_brands: string[];
+  first_seen: string;
+  last_seen: string;
+  status: string;
+  total_indicators: number;
+  linked_domains: string[];
+  attack_vectors: string[];
+  mitigation: string;
+}
+
+export interface DistrustedCA {
+  ca_name: string;
+  match_type: string;
+  value: string;
+  reason: string;
+  source_name: string;
+  source_url: string;
+  date_added: string;
+  status: string;
+}
+
+export interface PlatformStats {
+  total_scans_analyzed: number;
+  threats_mitigated: number;
+  active_indicators_tracked: number;
+  onchain_verifications: number;
+  heuristic_eval_time_ms: number;
+  tamper_detection_rate: string;
+  uptime_percent: number;
+  threat_feeds_connected: number;
+  blockchain_network: string;
+}
