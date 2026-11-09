@@ -1,0 +1,13 @@
+{
+  "phishing_keywords": [
+    "verify", "verification", "update", "kyc", "secure", "security",
+    "login", "signin", "account", "banking", "refund", "reward",
+    "prize", "claim", "wallet", "support", "helpdesk", "otp",
+    "unlock", "suspend", "confirm", "billing", "payment", "invoice",
+    "pan", "aadhaar"
+  ],
+  "redirect_parameters": [
+    "url", "redirect", "redirect_uri", "next", "continue", "dest",
+    "destination", "target", "return", "returnurl", "goto", "link"
+  ]
+}

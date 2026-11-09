@@ -1,0 +1,112 @@
+[
+  {
+    "brand": "State Bank of India",
+    "keywords": ["sbi", "onlinesbi", "statebank"],
+    "official_domains": ["sbi.co.in", "onlinesbi.sbi", "onlinesbi.com"]
+  },
+  {
+    "brand": "HDFC Bank",
+    "keywords": ["hdfc", "hdfcbank"],
+    "official_domains": ["hdfcbank.com"]
+  },
+  {
+    "brand": "ICICI Bank",
+    "keywords": ["icici", "icicibank"],
+    "official_domains": ["icicibank.com"]
+  },
+  {
+    "brand": "Axis Bank",
+    "keywords": ["axisbank"],
+    "official_domains": ["axisbank.com"]
+  },
+  {
+    "brand": "Punjab National Bank",
+    "keywords": ["pnb"],
+    "official_domains": ["pnbindia.in"]
+  },
+  {
+    "brand": "Paytm",
+    "keywords": ["paytm"],
+    "official_domains": ["paytm.com"]
+  },
+  {
+    "brand": "PhonePe",
+    "keywords": ["phonepe"],
+    "official_domains": ["phonepe.com"]
+  },
+  {
+    "brand": "Google",
+    "keywords": ["google", "gmail"],
+    "official_domains": ["google.com", "google.co.in"]
+  },
+  {
+    "brand": "Microsoft",
+    "keywords": ["microsoft", "office365", "outlook"],
+    "official_domains": ["microsoft.com", "office.com", "outlook.com", "live.com"]
+  },
+  {
+    "brand": "Amazon",
+    "keywords": ["amazon"],
+    "official_domains": ["amazon.com", "amazon.in"]
+  },
+  {
+    "brand": "Flipkart",
+    "keywords": ["flipkart"],
+    "official_domains": ["flipkart.com"]
+  },
+  {
+    "brand": "PayPal",
+    "keywords": ["paypal"],
+    "official_domains": ["paypal.com"]
+  },
+  {
+    "brand": "Apple",
+    "keywords": ["apple", "icloud"],
+    "official_domains": ["apple.com", "icloud.com"]
+  },
+  {
+    "brand": "Meta platforms",
+    "keywords": ["facebook", "instagram", "whatsapp"],
+    "official_domains": ["facebook.com", "instagram.com", "whatsapp.com"]
+  },
+  {
+    "brand": "LinkedIn",
+    "keywords": ["linkedin"],
+    "official_domains": ["linkedin.com"]
+  },
+  {
+    "brand": "GitHub",
+    "keywords": ["github"],
+    "official_domains": ["github.com"]
+  },
+  {
+    "brand": "Income Tax Department (India)",
+    "keywords": ["incometax"],
+    "official_domains": ["incometax.gov.in"]
+  },
+  {
+    "brand": "UIDAI (Aadhaar)",
+    "keywords": ["uidai", "aadhaar"],
+    "official_domains": ["uidai.gov.in"]
+  },
+  {
+    "brand": "India Post",
+    "keywords": ["indiapost"],
+    "official_domains": ["indiapost.gov.in"]
+  },
+  {
+    "brand": "IRCTC",
+    "keywords": ["irctc"],
+    "official_domains": ["irctc.co.in"]
+  },
+  {
+    "brand": "NPCI / UPI",
+    "keywords": ["npci", "bhim"],
+    "official_domains": ["npci.org.in"]
+  },
+  {
+    "brand": "Netflix",
+    "keywords": ["netflix"],
+    "official_domains": ["netflix.com"]
+  }
+]

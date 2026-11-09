@@ -1,0 +1,10 @@
+{
+  "suspicious_tlds": [
+    "zip", "mov", "top", "xyz", "click", "work", "support", "live",
+    "rest", "icu", "cfd", "sbs", "buzz", "gq", "tk", "ml", "cf"
+  ],
+  "url_shorteners": [
+    "bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "rb.gy",
+    "shorturl.at", "ow.ly", "buff.ly", "bit.do", "tiny.cc", "rebrand.ly", "t.ly"
+  ]
+}
