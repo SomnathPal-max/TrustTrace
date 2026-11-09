@@ -15,17 +15,26 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-slate-200/60 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
+    <nav className="sticky top-0 z-50 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-[#0d0d10]/90 backdrop-blur-xl transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="#" className="flex items-center gap-2.5 shrink-0">
-            <div className="p-1.5 bg-brand-600 rounded-lg text-white shadow-md shadow-brand-600/20">
+          <a href="#" className="flex items-center gap-2.5 shrink-0 group">
+            <div className="p-2 bg-gradient-to-tr from-brand-600 to-emerald-400 rounded-xl text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
               <Shield className="w-5 h-5" />
             </div>
             <div className="hidden sm:block">
-              <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">TrustTrace</span>
-              <span className="hidden lg:inline text-xs text-slate-400 dark:text-slate-500 ml-2 font-medium">Link & Scam Detective</span>
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-black tracking-tight text-zinc-900 dark:text-zinc-100">
+                  TrustTrace
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border border-brand-200/50 dark:border-brand-800/50">
+                  SOC v1.0
+                </span>
+              </div>
+              <span className="hidden lg:inline text-xs text-zinc-400 dark:text-zinc-400 font-medium">
+                Link & Scam Detective
+              </span>
             </div>
           </a>
 
@@ -35,7 +44,7 @@ export default function Navbar() {
               <a
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-300 hover:text-brand-600 dark:hover:text-brand-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/60 transition-all hover:-translate-y-0.5"
               >
                 <link.icon className="w-4 h-4" />
                 {link.label}
@@ -47,15 +56,15 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+              className="p-2.5 rounded-xl text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all hover:scale-105"
               aria-label="Toggle theme"
             >
-              {resolvedTheme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              {resolvedTheme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
             </button>
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="md:hidden p-2 rounded-lg text-zinc-500 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
               aria-label="Toggle menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -66,14 +75,14 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 animate-fade-in">
+        <div className="md:hidden border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#111114] animate-fade-in">
           <div className="px-4 py-3 space-y-1">
             {NAV_LINKS.map(link => (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
               >
                 <link.icon className="w-4 h-4" />
                 {link.label}

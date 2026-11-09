@@ -51,27 +51,27 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-[#09090b] text-zinc-900 dark:text-zinc-100 transition-colors">
       <Navbar />
 
       <main className="flex-1">
         {/* ── 1. Hero Section ──────────────────────────────────────────────── */}
-        <section className="relative overflow-hidden hero-gradient border-b border-slate-200/80 dark:border-slate-800/80 py-20 lg:py-28">
+        <section className="relative overflow-hidden hero-gradient border-b border-zinc-200/80 dark:border-zinc-800/80 py-20 lg:py-28">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="max-w-3xl mx-auto text-center space-y-6">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-brand-200/60 dark:border-brand-800/60 text-brand-700 dark:text-brand-300 shadow-sm animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/80 dark:bg-[#121215]/90 backdrop-blur-md border border-brand-200/60 dark:border-brand-800/60 text-brand-700 dark:text-brand-300 shadow-sm animate-fade-in">
                 <Shield className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
                 <span>Next-Gen Cybersecurity · AI · Web3 Proof Registry</span>
               </div>
 
               {/* Title */}
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-950 dark:text-white leading-[1.15]">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-zinc-950 dark:text-white leading-[1.15]">
                 Expose Malicious Links & Financial Scams Before They Strike
               </h1>
 
               {/* Subtitle */}
-              <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
+              <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-300 leading-relaxed font-normal">
                 TrustTrace is an enterprise-grade detection platform combining 7-layer passive telemetry, AI heuristic correlation, and EVM blockchain immutability to identify phishing campaigns, deceptive redirects, and social engineering attacks in real time.
               </p>
 
@@ -79,7 +79,7 @@ export default function Home() {
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
                 <a
                   href="#scanner"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 shadow-lg shadow-brand-500/25 hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-300"
                 >
                   <Activity className="w-4 h-4" />
                   Launch Scanner
@@ -88,7 +88,7 @@ export default function Home() {
 
                 <a
                   href="#how-it-works"
-                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-slate-700 dark:text-slate-200 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 backdrop-blur-md hover:-translate-y-0.5 transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm text-zinc-700 dark:text-zinc-200 bg-white/80 dark:bg-[#121215]/80 hover:bg-white dark:hover:bg-[#18181c] border border-zinc-200 dark:border-zinc-800 backdrop-blur-md hover:-translate-y-0.5 transition-all duration-300"
                 >
                   <Layers className="w-4 h-4" />
                   How It Works
@@ -96,7 +96,7 @@ export default function Home() {
 
                 <a
                   href="#reports"
-                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-3.5 rounded-xl font-bold text-sm text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-white transition-colors"
                 >
                   <Database className="w-4 h-4 text-brand-500" />
                   Audit History
@@ -109,54 +109,54 @@ export default function Home() {
               <div className="flex items-center justify-between mb-3 px-2 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  <span className="font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
                     Live Database Telemetry
                   </span>
                 </div>
-                <span className="font-mono text-slate-500 dark:text-slate-400">
+                <span className="font-mono text-zinc-500 dark:text-zinc-400">
                   EVM Network: <span className="text-brand-600 dark:text-brand-400 font-semibold">{stats?.blockchain_network || "Hardhat Local (EVM)"}</span>
                 </span>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="cyber-card p-4 rounded-2xl bg-white/80 dark:bg-[#121215]/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/90 text-center shadow-sm hover:-translate-y-1 transition-all duration-300">
                   <div className="text-3xl font-black text-brand-600 dark:text-brand-400">
                     {stats?.total_scans_analyzed ?? 102}
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
+                  <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                     Total Scans Analyzed
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Database Verified</div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Database Verified</div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="cyber-card p-4 rounded-2xl bg-white/80 dark:bg-[#121215]/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/90 text-center shadow-sm hover:-translate-y-1 transition-all duration-300">
                   <div className="text-3xl font-black text-red-600 dark:text-red-400">
                     {stats?.threats_mitigated ?? 38}
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
+                  <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                     High-Risk Threats
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Malicious / Phishing</div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Malicious / Phishing</div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-center shadow-sm hover:shadow-md transition-shadow">
+                <div className="cyber-card p-4 rounded-2xl bg-white/80 dark:bg-[#121215]/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/90 text-center shadow-sm hover:-translate-y-1 transition-all duration-300">
                   <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
                     {stats?.onchain_verifications ?? 14}
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
+                  <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                     On-Chain Proofs
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Smart Contract Registered</div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Smart Contract Registered</div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 text-center shadow-sm hover:shadow-md transition-shadow">
-                  <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400">
+                <div className="cyber-card p-4 rounded-2xl bg-white/80 dark:bg-[#121215]/90 backdrop-blur-md border border-zinc-200/80 dark:border-zinc-800/90 text-center shadow-sm hover:-translate-y-1 transition-all duration-300">
+                  <div className="text-3xl font-black text-teal-500 dark:text-teal-400">
                     {stats?.active_indicators_tracked ?? 146}
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-1">
+                  <div className="text-xs font-bold text-zinc-800 dark:text-zinc-200 mt-1">
                     Active Indicators
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">IOC Graph Nodes</div>
+                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">IOC Graph Nodes</div>
                 </div>
               </div>
             </div>
@@ -166,26 +166,26 @@ export default function Home() {
         {/* ── 2. Platform Capabilities Summary (What Website Can Do) ─────── */}
         <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">
               What TrustTrace Does
             </h2>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
               A comprehensive cybersecurity suite built to detect malicious links, credential theft, and financial fraud across digital channels.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-3 bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-xl inline-block mb-4">
+            <div className="cyber-card bg-white dark:bg-[#121215] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm group hover:-translate-y-1 transition-all duration-300">
+              <div className="p-3 bg-brand-50 dark:bg-brand-950/40 text-brand-600 dark:text-brand-400 rounded-xl inline-block mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 border border-brand-200/40 dark:border-brand-800/40">
                 <Globe className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
                 URL & Redirect Chain Analysis
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
                 Safely follows redirect chains, parses DNS and domain age, identifies punycode typosquatting, and exposes hidden cross-domain destination URLs.
               </p>
-              <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <ul className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-brand-500" />
                   Homograph / IDN domain spoof detection
@@ -201,17 +201,17 @@ export default function Home() {
               </ul>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-xl inline-block mb-4">
+            <div className="cyber-card bg-white dark:bg-[#121215] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm group hover:-translate-y-1 transition-all duration-300">
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 rounded-xl inline-block mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 border border-emerald-200/40 dark:border-emerald-800/40">
                 <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                 TLS Certificate & Header Auditing
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
                 Verifies X.509 certificate chains, identifies distrusted CAs (including eMudhra incidents), and evaluates HSTS, CSP, and defensive security headers.
               </p>
-              <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <ul className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
                 <li className="flex items-center gap-2">
                   <Check className="w-3.5 h-3.5 text-emerald-500" />
                   Distrusted CA fingerprint matching
@@ -227,27 +227,27 @@ export default function Home() {
               </ul>
             </div>
 
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl inline-block mb-4">
+            <div className="cyber-card bg-white dark:bg-[#121215] rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 shadow-sm group hover:-translate-y-1 transition-all duration-300">
+              <div className="p-3 bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 rounded-xl inline-block mb-4 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 border border-teal-200/40 dark:border-teal-800/40">
                 <Cpu className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">
+              <h3 className="text-base font-bold text-zinc-900 dark:text-white mb-2 group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors">
                 Message Scams & Social Engineering
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
                 Parses SMS, WhatsApp, and email lures. Extracts UPI handles, phone numbers, and cryptocurrency addresses while redacting sensitive user tokens.
               </p>
-              <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+              <ul className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-300">
                 <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-500" />
+                  <Check className="w-3.5 h-3.5 text-teal-500" />
                   Aadhaar, credit card, and OTP token redaction
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-500" />
+                  <Check className="w-3.5 h-3.5 text-teal-500" />
                   Urgency and threat language scoring
                 </li>
                 <li className="flex items-center gap-2">
-                  <Check className="w-3.5 h-3.5 text-indigo-500" />
+                  <Check className="w-3.5 h-3.5 text-teal-500" />
                   Cross-report scam campaign clustering
                 </li>
               </ul>
@@ -265,7 +265,7 @@ export default function Home() {
               <div className="flex items-center justify-between px-2">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                     Active Inspection Result
                   </span>
                 </div>
