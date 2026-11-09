@@ -423,10 +423,10 @@ def get_platform_stats(db: Session = Depends(get_db)):
     total_indicators = db.query(IndicatorRecord).count()
 
     return {
-        "total_scans_analyzed": max(4892, total_scans + 4890),
-        "threats_mitigated": max(1240, high_risk_scans + 1238),
-        "active_indicators_tracked": max(840, total_indicators + 836),
-        "onchain_verifications": max(512, verified_commits + 510),
+        "total_scans_analyzed": total_scans,
+        "threats_mitigated": high_risk_scans,
+        "active_indicators_tracked": total_indicators,
+        "onchain_verifications": verified_commits,
         "heuristic_eval_time_ms": 32,
         "tamper_detection_rate": "100.0%",
         "uptime_percent": 99.98,

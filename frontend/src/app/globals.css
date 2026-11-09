@@ -72,3 +72,47 @@ html { scroll-behavior: smooth; }
   background-size: 400% 400%;
   animation: gradient-shift 15s ease infinite;
 }
+
+
+/* ── Print Stylesheet for Enterprise PDF / SOC Incident Export ─────────────────── */
+@media print {
+  /* Hide interactive / non-report page elements */
+  nav, footer, #scanner, #how-it-works, #security, #reports, .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+  }
+
+  /* Expand layout to fit paper */
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .max-w-4xl, .max-w-7xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Force color printing for risk badges and findings */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Prevent split elements across pages */
+  .rounded-2xl, .rounded-xl, .p-6, .p-8 {
+    break-inside: avoid !important;
+    box-shadow: none !important;
+  }
+
+  /* Always show findings and details */
+  details[open] summary ~ * {
+    animation: none !important;
+  }
+}

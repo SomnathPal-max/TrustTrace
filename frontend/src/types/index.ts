@@ -174,3 +174,16 @@ export interface DemoSample {
   expected_label: string;
   description?: string;
 }
+
+
+export interface PlatformStats {
+  total_scans_analyzed: number;
+  threats_mitigated: number;
+  active_indicators_tracked: number;
+  onchain_verifications: number;
+  heuristic_eval_time_ms: number;
+  tamper_detection_rate: string;
+  uptime_percent: number;
+  threat_feeds_connected: number;
+  blockchain_network: string;
+}
