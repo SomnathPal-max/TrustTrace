@@ -1,6 +1,7 @@
 import time
 import json
 import uuid
+import os
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 
@@ -25,6 +26,52 @@ from backend.app.models import (
 def run_scan_pipeline(report_id: str, request: ScanRequest, db: Session):
     t0 = time.time()
     try:
+        # Check cached sample mode for demo reliability (Section 7.1 & Section 9 Phase 10)
+        if request.use_cached:
+            fixtures_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "fixtures", "cached_samples.json"))
+            if os.path.exists(fixtures_path):
+                with open(fixtures_path, "r", encoding="utf-8") as f:
+                    cached_fixtures = json.load(f)
+                
+                matched_key = None
+                req_val = request.value.strip().lower()
+                if "sbi.co.in" in req_val:
+                    matched_key = "B1"
+                elif "github.com" in req_val:
+                    matched_key = "B2"
+                elif "wikipedia.org" in req_val:
+                    matched_key = "B3"
+                elif "sbi-kyc-update.com" in req_val and request.type == "url":
+                    matched_key = "S1"
+                elif "xn--gogl" in req_val:
+                    matched_key = "S2"
+                elif request.type == "message" or "blocked within 2 hours" in req_val:
+                    matched_key = "S3"
+                elif "simulated-distrusted-ca" in req_val:
+                    matched_key = "SIM"
+
+                if matched_key and matched_key in cached_fixtures:
+                    cached_data = cached_fixtures[matched_key]
+                    cached_data["report_id"] = report_id
+                    cached_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                    cached_data["is_cached_sample"] = True
+                    
+                    rep_obj = Report.model_validate(cached_data)
+                    record = ScanRecord(
+                        report_id=report_id,
+                        created_at=rep_obj.created_at,
+                        input_type=rep_obj.input_type,
+                        risk_label=rep_obj.risk_label.value,
+                        risk_score=rep_obj.risk_score,
+                        full_report_json=json.dumps(rep_obj.model_dump(), sort_keys=True),
+                        is_committed=False,
+                        is_demo_seed=False
+                    )
+                    db.add(record)
+                    db.commit()
+                    job_runner.mark_complete(report_id, rep_obj.model_dump())
+                    return
+
         completed_groups = []
         unavailable_groups = []
         all_findings = []

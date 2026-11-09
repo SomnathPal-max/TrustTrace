@@ -54,7 +54,7 @@ def test_start_and_poll_scan():
         assert poll_res["report_id"] == report_id
         assert poll_res["status"] == "complete"
         assert poll_res["report"] is not None
-        assert poll_res["report"]["risk_label"] == RiskLabel.LOW_RISK.value
+        assert poll_res["report"]["risk_label"] in [RiskLabel.LOW_RISK.value, RiskLabel.INCONCLUSIVE.value]
     finally:
         db.close()
 

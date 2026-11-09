@@ -1,0 +1,644 @@
+{
+  "B1": {
+    "report_id": "cached-b1",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "https://sbi.co.in",
+    "normalized_url": "https://sbi.co.in",
+    "registrable_domain": "sbi.co.in",
+    "final_url": "https://sbi.co.in",
+    "final_domain": "sbi.co.in",
+    "resolved_ips": ["14.140.231.114", "14.140.231.115"],
+    "risk_label": "Low Risk",
+    "risk_score": 0,
+    "evidence_coverage": {
+      "percent": 95,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "Redirect and fetch", "TLS", "Security headers", "Threat intelligence"],
+      "unavailable_groups": []
+    },
+    "findings": [],
+    "checks": [
+      { "check_id": "CHK-SSRF", "status": "passed", "duration_ms": 2, "short_note": "Destination is public globally routable IP." },
+      { "check_id": "CHK-BRAND-MATCH", "status": "passed", "duration_ms": 3, "short_note": "Official domain match for State Bank of India (MIT-01)." },
+      { "check_id": "CHK-TLS", "status": "passed", "duration_ms": 110, "short_note": "TLS certificate valid and trusted." },
+      { "check_id": "CHK-INTEL", "status": "passed", "duration_ms": 85, "short_note": "No match on threat feeds." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxps://sbi[.]co[.]in", "status_code": 200, "registrable_domain": "sbi.co.in", "same_site": true }
+    ],
+    "tls": {
+      "subject": "CN=sbi.co.in",
+      "san_list": ["sbi.co.in", "www.sbi.co.in"],
+      "issuer": "CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1",
+      "validity_start": "2026-01-10T00:00:00Z",
+      "validity_end": "2027-01-10T23:59:59Z",
+      "days_remaining": 62,
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "signature_algorithm": "sha256WithRSAEncryption",
+      "certificate_sha256": "4a72d3e2b10984cfb72183921829318290318209381209381209381209381209",
+      "spki_sha256": "1928301928301928301928301928301928301928301928301928301928301928",
+      "chain_list": ["CN=sbi.co.in", "CN=DigiCert Global G2 TLS RSA SHA256 2020 CA1", "CN=DigiCert Global Root G2"],
+      "trust_result": "trusted",
+      "ct_summary": { "total_logged_certificates": 14, "distinct_issuers_count": 2, "certificates_last_30_days": 1, "ct_available": true },
+      "tls_verdict": "Valid configuration",
+      "https_note": "A valid HTTPS certificate only means the connection is encrypted and the certificate matches the domain. It does not mean the website is trustworthy."
+    },
+    "security_headers": [
+      { "header_name": "Strict-Transport-Security", "present": true, "observed_value": "max-age=31536000; includeSubDomains", "severity": "Info" },
+      { "header_name": "Content-Security-Policy", "present": true, "observed_value": "default-src 'self'", "severity": "Info" },
+      { "header_name": "X-Frame-Options", "present": true, "observed_value": "DENY", "severity": "Info" },
+      { "header_name": "X-Content-Type-Options", "present": true, "observed_value": "nosniff", "severity": "Info" }
+    ],
+    "threat_intel": {
+      "feeds_queried": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_answered": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_unavailable": [],
+      "matches": []
+    },
+    "campaign": {
+      "linked": false,
+      "matched_indicators": [],
+      "related_report_count": 0,
+      "cluster_size": 0
+    },
+    "ai_explanation": {
+      "summary": "Analysis completed with a verdict of Low Risk. The submitted domain 'sbi.co.in' is an exact match for the official domain of State Bank of India. The TLS certificate is valid and issued by a trusted root authority with healthy security headers. No threat intelligence listings were identified within available checks.",
+      "evidence_points": [],
+      "recommended_actions": [
+        "No significant malicious indicators identified within available checks.",
+        "Ensure your browser displays a valid lock icon before entering banking credentials."
+      ],
+      "limitations_note": "Absence of a match in threat feeds does not prove a site is safe.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": [
+      "No significant malicious indicators identified within available checks.",
+      "Exercise standard web hygiene and ensure your browser indicates an encrypted connection."
+    ],
+    "limitations": [
+      "Absence of a match in these sources does not prove a site is safe.",
+      "Passive inspection does not execute JavaScript or perform intrusive vulnerability testing."
+    ],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 320,
+    "is_cached_sample": true
+  },
+  "B2": {
+    "report_id": "cached-b2",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "https://github.com",
+    "normalized_url": "https://github.com",
+    "registrable_domain": "github.com",
+    "final_url": "https://github.com",
+    "final_domain": "github.com",
+    "resolved_ips": ["140.82.112.4"],
+    "risk_label": "Low Risk",
+    "risk_score": 0,
+    "evidence_coverage": {
+      "percent": 95,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "Redirect and fetch", "TLS", "Security headers", "Threat intelligence"],
+      "unavailable_groups": []
+    },
+    "findings": [],
+    "checks": [
+      { "check_id": "CHK-BRAND-MATCH", "status": "passed", "duration_ms": 2, "short_note": "Official domain match for GitHub (MIT-01)." },
+      { "check_id": "CHK-TLS", "status": "passed", "duration_ms": 95, "short_note": "TLS certificate valid and trusted." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxps://github[.]com", "status_code": 200, "registrable_domain": "github.com", "same_site": true }
+    ],
+    "tls": {
+      "subject": "CN=github.com",
+      "san_list": ["github.com", "www.github.com"],
+      "issuer": "CN=DigiCert High Assurance TLS Hybrid ECC SHA384 2021 CA1",
+      "validity_start": "2026-03-15T00:00:00Z",
+      "validity_end": "2027-03-15T23:59:59Z",
+      "days_remaining": 126,
+      "public_key_algorithm": "EC-secp256r1",
+      "public_key_size": 256,
+      "signature_algorithm": "ecdsa-with-SHA384",
+      "certificate_sha256": "5b83e4f3a21095dcb83294018294018294018294018294018294018294018294",
+      "spki_sha256": "2a3b4c5d6e7f8091a2b3c4d5e6f78091a2b3c4d5e6f78091a2b3c4d5e6f78091",
+      "chain_list": ["CN=github.com", "CN=DigiCert High Assurance TLS", "CN=DigiCert Global Root CA"],
+      "trust_result": "trusted",
+      "ct_summary": { "total_logged_certificates": 28, "distinct_issuers_count": 3, "certificates_last_30_days": 2, "ct_available": true },
+      "tls_verdict": "Valid configuration",
+      "https_note": "A valid HTTPS certificate only means the connection is encrypted and the certificate matches the domain. It does not mean the website is trustworthy."
+    },
+    "security_headers": [
+      { "header_name": "Strict-Transport-Security", "present": true, "observed_value": "max-age=31536000; includeSubdomains; preload", "severity": "Info" },
+      { "header_name": "Content-Security-Policy", "present": true, "observed_value": "default-src 'none'", "severity": "Info" },
+      { "header_name": "X-Frame-Options", "present": true, "observed_value": "deny", "severity": "Info" }
+    ],
+    "threat_intel": {
+      "feeds_queried": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_answered": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_unavailable": [],
+      "matches": []
+    },
+    "campaign": { "linked": false, "matched_indicators": [], "related_report_count": 0, "cluster_size": 0 },
+    "ai_explanation": {
+      "summary": "Analysis completed with a verdict of Low Risk. The submitted domain 'github.com' is an official developer platform domain with elliptic-curve cryptography, strict transport security, and no threat feed matches.",
+      "evidence_points": [],
+      "recommended_actions": ["No malicious indicators detected within available passive checks."],
+      "limitations_note": "Absence of a match in threat feeds does not prove a site is safe.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": ["Exercise standard web hygiene and ensure your browser indicates an encrypted connection."],
+    "limitations": ["Absence of a match in these sources does not prove a site is safe."],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 280,
+    "is_cached_sample": true
+  },
+  "B3": {
+    "report_id": "cached-b3",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "https://wikipedia.org",
+    "normalized_url": "https://wikipedia.org",
+    "registrable_domain": "wikipedia.org",
+    "final_url": "https://www.wikipedia.org",
+    "final_domain": "wikipedia.org",
+    "resolved_ips": ["208.80.154.224"],
+    "risk_label": "Low Risk",
+    "risk_score": 0,
+    "evidence_coverage": {
+      "percent": 95,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "Redirect and fetch", "TLS", "Security headers", "Threat intelligence"],
+      "unavailable_groups": []
+    },
+    "findings": [],
+    "checks": [
+      { "check_id": "CHK-TLS", "status": "passed", "duration_ms": 105, "short_note": "Valid Let's Encrypt TLS certificate." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxps://wikipedia[.]org", "status_code": 301, "registrable_domain": "wikipedia.org", "same_site": true },
+      { "url": "hxxps://www[.]wikipedia[.]org", "status_code": 200, "registrable_domain": "wikipedia.org", "same_site": true }
+    ],
+    "tls": {
+      "subject": "CN=*.wikipedia.org",
+      "san_list": ["*.wikipedia.org", "wikipedia.org"],
+      "issuer": "CN=R3, O=Let's Encrypt",
+      "validity_start": "2026-02-01T00:00:00Z",
+      "validity_end": "2026-05-02T23:59:59Z",
+      "days_remaining": 70,
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "signature_algorithm": "sha256WithRSAEncryption",
+      "certificate_sha256": "6c94f5e1b2a30495867192830192830192830192830192830192830192830192",
+      "spki_sha256": "3b4c5d6e7f8091a2b3c4d5e6f78091a2b3c4d5e6f78091a2b3c4d5e6f78091a2",
+      "chain_list": ["CN=*.wikipedia.org", "CN=R3", "CN=ISRG Root X1"],
+      "trust_result": "trusted",
+      "ct_summary": { "total_logged_certificates": 45, "distinct_issuers_count": 2, "certificates_last_30_days": 3, "ct_available": true },
+      "tls_verdict": "Valid configuration",
+      "https_note": "A valid HTTPS certificate only means the connection is encrypted and the certificate matches the domain. It does not mean the website is trustworthy."
+    },
+    "security_headers": [
+      { "header_name": "Strict-Transport-Security", "present": true, "observed_value": "max-age=106384710; includeSubDomains; preload", "severity": "Info" },
+      { "header_name": "X-Content-Type-Options", "present": true, "observed_value": "nosniff", "severity": "Info" }
+    ],
+    "threat_intel": {
+      "feeds_queried": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_answered": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_unavailable": [],
+      "matches": []
+    },
+    "campaign": { "linked": false, "matched_indicators": [], "related_report_count": 0, "cluster_size": 0 },
+    "ai_explanation": {
+      "summary": "Analysis completed with a verdict of Low Risk. Wikipedia demonstrates false-positive handling on a highly trafficked informational website. Valid wildcard certificate and modern security headers observed.",
+      "evidence_points": [],
+      "recommended_actions": ["No malicious indicators detected within available passive checks."],
+      "limitations_note": "Absence of a match in threat feeds does not prove a site is safe.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": ["Exercise standard web hygiene and ensure your browser indicates an encrypted connection."],
+    "limitations": ["Absence of a match in these sources does not prove a site is safe."],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 310,
+    "is_cached_sample": true
+  },
+  "S1": {
+    "report_id": "cached-s1",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "http://sbi-kyc-update.com/login",
+    "normalized_url": "http://sbi-kyc-update.com/login",
+    "registrable_domain": "sbi-kyc-update.com",
+    "final_url": "http://sbi-kyc-update.com/login",
+    "final_domain": "sbi-kyc-update.com",
+    "resolved_ips": ["198.51.100.25"],
+    "risk_label": "High Risk",
+    "risk_score": 85,
+    "evidence_coverage": {
+      "percent": 80,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "Threat intelligence"],
+      "unavailable_groups": ["TLS", "Security headers"]
+    },
+    "findings": [
+      {
+        "id": "F-01",
+        "signal_id": "IMP-01",
+        "category": "IMPERSONATION",
+        "title": "Brand impersonation in domain (State Bank of India)",
+        "description": "The registrable domain contains the brand keyword 'sbi' but is not an official domain of State Bank of India.",
+        "severity": "High",
+        "points": 40,
+        "technical_evidence": { "brand": "State Bank of India", "keyword": "sbi", "registrable_domain": "sbi-kyc-update.com" },
+        "source": "lexical analysis",
+        "potential_impact": "Users may enter credentials on a site pretending to be a known organisation.",
+        "recommendation": "Do not enter details; report the site to State Bank of India.",
+        "limitation": "Lexical evidence suggests impersonation but is not proof of fraud."
+      },
+      {
+        "id": "F-02",
+        "signal_id": "INT-03",
+        "category": "INTEL",
+        "title": "Match in documented threat dataset (banking phishing)",
+        "description": "Target matches verified malicious indicator in the curated threat dataset for banking phishing: Phishing / Credential Harvesting (Source: Curated OpenPhish / PhishTank Community Benchmark Feed, Date: 2026-10-15).",
+        "severity": "High",
+        "points": 40,
+        "technical_evidence": { "category": "banking phishing", "threat_type": "Phishing / Credential Harvesting", "source": "Curated OpenPhish / PhishTank Community Benchmark Feed" },
+        "source": "bundled dataset",
+        "potential_impact": "Confirmed phishing endpoint attempting to harvest bank credentials.",
+        "recommendation": "Do not open the link or enter credentials.",
+        "limitation": "Reflects captured benchmark feeds."
+      },
+      {
+        "id": "F-03",
+        "signal_id": "STR-01",
+        "category": "STRUCTURE",
+        "title": "Phishing keyword combined with brand in hostname",
+        "description": "The hostname combines brand references with phishing lures: kyc, update.",
+        "severity": "Medium",
+        "points": 15,
+        "technical_evidence": { "keywords_found": ["kyc", "update"], "hostname": "sbi-kyc-update.com" },
+        "source": "lexical analysis",
+        "potential_impact": "Commonly used to create high-urgency fake login portals.",
+        "recommendation": "Navigate to the service directly via official bookmarks.",
+        "limitation": "Some services legitimately use account or login."
+      }
+    ],
+    "checks": [
+      { "check_id": "CHK-BRAND", "status": "flagged", "duration_ms": 3, "short_note": "Brand impersonation flagged (IMP-01)." },
+      { "check_id": "CHK-INTEL", "status": "flagged", "duration_ms": 12, "short_note": "Indicator match in curated threat dataset." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxp://sbi-kyc-update[.]com/login", "status_code": 200, "registrable_domain": "sbi-kyc-update.com", "same_site": true }
+    ],
+    "threat_intel": {
+      "feeds_queried": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_answered": ["Bundled Curated Threat Dataset"],
+      "feeds_unavailable": ["URLhaus (abuse.ch)"],
+      "matches": [
+        {
+          "source_name": "Bundled Dataset (Curated OpenPhish / PhishTank Community Benchmark Feed)",
+          "listing_status": "listed",
+          "listing_date": "2026-10-15",
+          "threat_type": "Phishing / Credential Harvesting"
+        }
+      ]
+    },
+    "campaign": {
+      "linked": true,
+      "strength": "strong",
+      "matched_indicators": ["Domain: hxxp://sbi-kyc-update[.]com", "Infrastructure IP: 198.51.100.25"],
+      "related_report_count": 2,
+      "first_seen": "2026-11-04T08:00:00Z",
+      "cluster_size": 3,
+      "ai_summary": "Deterministically linked to existing phishing campaign cluster (2 prior report(s)). Corroborating indicators: shared hosting IP 198.51.100.25 and matching SBI bank brand impersonation keywords."
+    },
+    "ai_explanation": {
+      "summary": "This target has been classified as High Risk based on significant technical threat indicators. Automated checks identified 3 suspicious indicator(s) including structural, cryptographic, or impersonation anomalies. Interacting with this target carries severe risk of credential theft or financial loss.",
+      "evidence_points": [
+        { "finding_id": "F-01", "explanation": "Brand impersonation in domain (State Bank of India): The domain mimics SBI without belonging to official bank infrastructure." },
+        { "finding_id": "F-02", "explanation": "Match in documented threat dataset (banking phishing): The domain matches a known phishing record in security databases." },
+        { "finding_id": "F-03", "explanation": "Phishing keyword combined with brand in hostname: The domain combines brand name with 'kyc' and 'update' keywords." }
+      ],
+      "recommended_actions": [
+        "Do not open the link, download files, or enter credentials or sensitive details.",
+        "If credentials or payment details were already submitted, immediately change passwords and freeze affected bank cards.",
+        "Report this link to State Bank of India and local cybercrime authorities."
+      ],
+      "limitations_note": "Absence of a match in threat feeds does not prove a site is safe.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": [
+      "Do not open the link, download files, or enter credentials or sensitive details.",
+      "If credentials or payment details were already submitted, immediately change passwords and freeze affected bank cards.",
+      "Report this link to the impersonated brand and local cybercrime authorities."
+    ],
+    "limitations": [
+      "Absence of a match in these sources does not prove a site is safe.",
+      "Passive inspection does not execute JavaScript or perform intrusive vulnerability testing."
+    ],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 420,
+    "is_cached_sample": true
+  },
+  "S2": {
+    "report_id": "cached-s2",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "http://xn--gogl-qqa.com/login",
+    "normalized_url": "http://xn--gogl-qqa.com/login",
+    "registrable_domain": "xn--gogl-qqa.com",
+    "final_url": "http://xn--gogl-qqa.com/login",
+    "final_domain": "xn--gogl-qqa.com",
+    "resolved_ips": ["203.0.113.55"],
+    "risk_label": "Suspicious",
+    "risk_score": 40,
+    "evidence_coverage": {
+      "percent": 75,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "Threat intelligence"],
+      "unavailable_groups": ["TLS", "Security headers"]
+    },
+    "findings": [
+      {
+        "id": "F-01",
+        "signal_id": "IMP-04",
+        "category": "IMPERSONATION",
+        "title": "Punycode or homograph domain detected",
+        "description": "The domain uses internationalized characters (gögl.com) mimicking standard Latin characters for brand 'Google'.",
+        "severity": "High",
+        "points": 40,
+        "technical_evidence": { "punycode": "xn--gogl-qqa.com", "unicode": "gögl.com", "mimicked_brand": "Google" },
+        "source": "lexical analysis",
+        "potential_impact": "Visual homograph attacks fool users into thinking they are viewing an authentic website.",
+        "recommendation": "Do not enter passwords or credentials on homograph domains.",
+        "limitation": "International organizations legitimately use non-Latin domain names in regional contexts."
+      }
+    ],
+    "checks": [
+      { "check_id": "CHK-HOMOGRAPH", "status": "flagged", "duration_ms": 2, "short_note": "Punycode homoglyph detected (IMP-04)." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxp://xn--gogl-qqa[.]com/login", "status_code": 200, "registrable_domain": "xn--gogl-qqa.com", "same_site": true }
+    ],
+    "threat_intel": {
+      "feeds_queried": ["URLhaus (abuse.ch)", "Bundled Curated Threat Dataset"],
+      "feeds_answered": ["Bundled Curated Threat Dataset"],
+      "feeds_unavailable": ["URLhaus (abuse.ch)"],
+      "matches": []
+    },
+    "campaign": { "linked": false, "matched_indicators": [], "related_report_count": 0, "cluster_size": 0 },
+    "ai_explanation": {
+      "summary": "This target has been classified as Suspicious because one or more indicators require further investigation. The analysis identified 1 finding(s) that deviate from established benign standards. While full malicious intent cannot be definitively confirmed without intrusive scanning, extreme caution is advised.",
+      "evidence_points": [
+        { "finding_id": "F-01", "explanation": "Punycode or homograph domain detected: Uses characters that look visually identical to google.com to trick users." }
+      ],
+      "recommended_actions": [
+        "Carefully inspect the domain spelling and sender details before taking action.",
+        "Do not enter passwords or confidential credentials."
+      ],
+      "limitations_note": "Absence of a match in threat feeds does not prove a site is safe.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": [
+      "Exercise caution. Verify the sender or domain independently through official published channels.",
+      "Check the domain spelling carefully before proceeding."
+    ],
+    "limitations": [
+      "Absence of a match in these sources does not prove a site is safe.",
+      "Passive inspection does not execute JavaScript or perform intrusive vulnerability testing."
+    ],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 310,
+    "is_cached_sample": true
+  },
+  "S3": {
+    "report_id": "cached-s3",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "message",
+    "input_display": "URGENT: Your SBI bank account will be blocked within 2 hours. Update your PAN card and Aadhaar details immediately to avoid deactivation: http://sbi-kyc-update.com/pan. Call 9876543210.",
+    "risk_label": "High Risk",
+    "risk_score": 85,
+    "evidence_coverage": {
+      "percent": 80,
+      "completed_groups": ["Message analysis", "Lexical analysis"],
+      "unavailable_groups": []
+    },
+    "findings": [
+      {
+        "id": "F-01",
+        "signal_id": "MSG-01",
+        "category": "CONTENT",
+        "title": "Urgency or time pressure language",
+        "description": "Message uses psychological urgency tactics: 'within 2 hours, immediately'.",
+        "severity": "Low",
+        "points": 10,
+        "technical_evidence": { "matched_phrases": ["within 2 hours", "immediately"] },
+        "source": "message rules",
+        "potential_impact": "Psychological pressure designed to prompt hasty compliance without verification.",
+        "recommendation": "Pause and verify through trusted channels before taking any action.",
+        "limitation": "Legitimate deadline notifications also use urgent phrasing."
+      },
+      {
+        "id": "F-02",
+        "signal_id": "MSG-02",
+        "category": "CONTENT",
+        "title": "Threat of account suspension or penalty",
+        "description": "Message threatens penalties or service deactivation: 'will be blocked'.",
+        "severity": "Low",
+        "points": 10,
+        "technical_evidence": { "matched_phrases": ["will be blocked"] },
+        "source": "message rules",
+        "potential_impact": "Coercive language used to force user into panicked submission.",
+        "recommendation": "Do not panic. Contact your service provider via their verified hotline.",
+        "limitation": "Automated payment delinquency notices can contain threat warnings."
+      },
+      {
+        "id": "F-03",
+        "signal_id": "MSG-03",
+        "category": "CONTENT",
+        "title": "Request for sensitive data or KYC update",
+        "description": "Message requests sensitive verification or credentials: 'update your pan'.",
+        "severity": "High",
+        "points": 25,
+        "technical_evidence": { "matched_phrases": ["update your pan"], "negation_guard_passed": true },
+        "source": "message rules",
+        "potential_impact": "Direct credential theft, identity fraud, or unauthorized account access.",
+        "recommendation": "Never share OTPs, PINs, or PAN details via SMS or unverified web links.",
+        "limitation": "Official account onboarding flows occasionally send KYC reminders."
+      },
+      {
+        "id": "F-04",
+        "signal_id": "MSG-06",
+        "category": "IMPERSONATION",
+        "title": "Brand impersonation with domain mismatch (State Bank of India)",
+        "description": "Message refers to State Bank of India but directs to an unofficial destination: 'sbi-kyc-update.com'.",
+        "severity": "High",
+        "points": 25,
+        "technical_evidence": { "brand": "State Bank of India", "extracted_urls": ["http://sbi-kyc-update.com/pan"] },
+        "source": "message rules",
+        "potential_impact": "Direct brand impersonation phishing lure.",
+        "recommendation": "Access the organization's services only through official websites.",
+        "limitation": "Organizations occasionally use external survey or event platforms."
+      }
+    ],
+    "checks": [
+      { "check_id": "CHK-MSG-RULES", "status": "flagged", "duration_ms": 5, "short_note": "Triggered 4 social engineering signals." }
+    ],
+    "message_analysis": {
+      "extracted_urls": ["http://sbi-kyc-update.com/pan"],
+      "emails": [],
+      "phone_numbers": ["9876543210"],
+      "upi_ids": [],
+      "crypto_addresses": [],
+      "signals_triggered": ["MSG-01", "MSG-02", "MSG-03", "MSG-06"],
+      "per_url_labels": { "http://sbi-kyc-update.com/pan": "High Risk" },
+      "what_message_says": [
+        "Uses urgent phrasing: 'within 2 hours, immediately'",
+        "Threatens punitive action: 'will be blocked'",
+        "Requests credentials or KYC update: 'update your pan'"
+      ],
+      "what_checks_found": [
+        "Extracted link 'hxxp://sbi-kyc-update[.]com/pan' impersonates brand 'State Bank of India'.",
+        "Impersonation mismatch: Text mentions State Bank of India but link does not point to an official domain."
+      ],
+      "redaction_applied": false
+    },
+    "threat_intel": { "feeds_queried": [], "feeds_answered": [], "feeds_unavailable": [], "matches": [] },
+    "campaign": {
+      "linked": true,
+      "strength": "strong",
+      "matched_indicators": ["Identical social engineering message template", "Shared phone number destination"],
+      "related_report_count": 1,
+      "first_seen": "2026-11-06T12:00:00Z",
+      "cluster_size": 2,
+      "ai_summary": "Deterministically linked to existing phishing campaign cluster (1 prior report(s)). Corroborating indicators: matching message template and shared phone number."
+    },
+    "ai_explanation": {
+      "summary": "This message exhibits classic high-urgency panic-inducing social engineering tactics. It threatens immediate account blocking within 2 hours while requesting PAN and identity documents through an unofficial external link impersonating State Bank of India. Verified link analysis corroborates an active credential harvesting campaign.",
+      "evidence_points": [
+        { "finding_id": "F-01", "explanation": "Urgency or time pressure language: Uses 'within 2 hours' to pressure the victim into hasty action." },
+        { "finding_id": "F-02", "explanation": "Threat of account suspension or penalty: Uses 'will be blocked' to provoke emotional distress." },
+        { "finding_id": "F-03", "explanation": "Request for sensitive data: Directly solicits PAN card and identity update." },
+        { "finding_id": "F-04", "explanation": "Brand impersonation mismatch: Names SBI but directs victim to an unauthorized third-party portal." }
+      ],
+      "recommended_actions": [
+        "Do not open the link or enter passwords, OTPs, or financial information.",
+        "Verify the communication directly using official contact numbers published on sbi.co.in.",
+        "Report this message to your bank and local cybercrime authorities."
+      ],
+      "limitations_note": "This assessment is based on the wording of the message only. It is not verified evidence of fraud.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": [
+      "Do not open the link or enter passwords, OTPs, or financial information.",
+      "Verify the communication directly using official contact numbers published by the legitimate organization.",
+      "Report this message or URL to your organization's security team or local authorities."
+    ],
+    "limitations": [
+      "Absence of a match in these sources does not prove a site is safe.",
+      "This assessment is based on the wording of the message only. It is not verified evidence of fraud."
+    ],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 350,
+    "is_cached_sample": true
+  },
+  "SIM": {
+    "report_id": "cached-sim",
+    "schema_version": 1,
+    "created_at": "2026-11-09T10:00:00Z",
+    "input_type": "url",
+    "input_display": "https://simulated-distrusted-ca.local",
+    "normalized_url": "https://simulated-distrusted-ca.local",
+    "registrable_domain": "simulated-distrusted-ca.local",
+    "final_url": "https://simulated-distrusted-ca.local",
+    "final_domain": "simulated-distrusted-ca.local",
+    "resolved_ips": ["192.0.2.1"],
+    "risk_label": "High Risk",
+    "risk_score": 75,
+    "evidence_coverage": {
+      "percent": 85,
+      "completed_groups": ["Lexical analysis", "Domain and DNS", "TLS", "Certificate Transparency", "Threat intelligence"],
+      "unavailable_groups": []
+    },
+    "findings": [
+      {
+        "id": "F-TLS-06",
+        "signal_id": "TLS-06",
+        "category": "TLS",
+        "title": "Presented certificate chain includes a listed distrusted CA",
+        "description": "The certificate chain presented by this site includes a certificate authority certificate that appears on a published distrust list (eMudhra Demo Simulation CA, Link & Scam Detective Simulated Distrust Fixture, 2026-11-09). This means the certificate's trust may be compromised. This tool did not and cannot independently verify any internal key-generation weakness. [SIMULATED FIXTURE - not a live finding.]",
+        "severity": "High",
+        "points": 45,
+        "technical_evidence": {
+          "matched_ca": "eMudhra Demo Simulation CA",
+          "fingerprint": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+          "source": "Link & Scam Detective Simulated Distrust Fixture",
+          "simulation": true
+        },
+        "source": "distrust list match",
+        "potential_impact": "Certificate trust may be compromised, so the certificate may not reliably prove the site's identity.",
+        "recommendation": "Replace the certificate with one from a currently trusted authority.",
+        "limitation": "This is a match to a published list. The tool cannot verify any internal key-generation weakness."
+      }
+    ],
+    "checks": [
+      { "check_id": "CHK-TLS-DISTRUST", "status": "flagged", "duration_ms": 15, "short_note": "TLS-06 triggered on simulated distrusted chain." }
+    ],
+    "redirect_chain": [
+      { "url": "hxxps://simulated-distrusted-ca[.]local", "status_code": 200, "registrable_domain": "simulated-distrusted-ca.local", "same_site": true }
+    ],
+    "tls": {
+      "subject": "CN=simulated-distrusted-ca.local",
+      "san_list": ["simulated-distrusted-ca.local"],
+      "issuer": "CN=eMudhra Sub-CA Demo Simulation",
+      "validity_start": "2026-01-01T00:00:00Z",
+      "validity_end": "2027-01-01T23:59:59Z",
+      "days_remaining": 53,
+      "public_key_algorithm": "RSA",
+      "public_key_size": 2048,
+      "signature_algorithm": "sha256WithRSAEncryption",
+      "certificate_sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "spki_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "chain_list": ["CN=simulated-distrusted-ca.local", "CN=eMudhra Sub-CA Demo Simulation (DISTRUSTED)"],
+      "trust_result": "distrusted",
+      "ct_summary": { "total_logged_certificates": 1, "ct_available": true },
+      "tls_verdict": "Potentially compromised trust",
+      "https_note": "A valid HTTPS certificate only means the connection is encrypted and the certificate matches the domain. It does not mean the website is trustworthy."
+    },
+    "security_headers": [],
+    "threat_intel": { "feeds_queried": [], "feeds_answered": [], "feeds_unavailable": [], "matches": [] },
+    "campaign": { "linked": false, "matched_indicators": [], "related_report_count": 0, "cluster_size": 0 },
+    "ai_explanation": {
+      "summary": "This target presents a certificate chain that traces to an authority cataloged on browser root program distrust advisories (simulated eMudhra scenario). Although an HTTPS session can be established, the cryptographic trust chain cannot be verified. This tool evaluates published distrust fingerprints and does not inspect the Certificate Authority's internal key generation.",
+      "evidence_points": [
+        { "finding_id": "F-TLS-06", "explanation": "Distrusted CA Certificate Match: Certificate chain includes intermediate revoked by browser programs." }
+      ],
+      "recommended_actions": [
+        "Do not trust the identity vouched for by this certificate chain.",
+        "Contact the site administrator to reissue certificates through an active, trusted Certificate Authority."
+      ],
+      "limitations_note": "SIMULATED FIXTURE - not a live finding.",
+      "model_name": "deterministic_template",
+      "generated_by": "fallback_template"
+    },
+    "recommended_actions": [
+      "Do not enter details; the certificate trust may be compromised.",
+      "Verify the website identity through independent secondary communication."
+    ],
+    "limitations": [
+      "SIMULATED FIXTURE - not a live finding.",
+      "This tool did not and cannot independently verify any internal key-generation weakness."
+    ],
+    "disclaimer": "No automated tool can guarantee a website is completely safe. This assessment reflects only the checks that were available at the time of analysis.",
+    "analysis_duration_ms": 250,
+    "is_cached_sample": true
+  }
+}

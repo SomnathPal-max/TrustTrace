@@ -1,5 +1,6 @@
 import pytest
 import json
+import uuid
 from backend.app.db.session import SessionLocal, init_db
 from backend.app.db.models import ScanRecord, CommitRecord
 from backend.app.web3.canonical import canonical_serialize, compute_onchain_id
@@ -40,7 +41,7 @@ def test_web3_commit_tamper_restore_cycle():
     init_db()
     db = SessionLocal()
     try:
-        report_id = "test-web3-cycle-01"
+        report_id = f"test-web3-{uuid.uuid4()}"
         sample_report = {
             "report_id": report_id,
             "created_at": "2026-11-09T12:00:00Z",
