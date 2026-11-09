@@ -1,0 +1,62 @@
+[
+  {
+    "ca_name": "eMudhra Sub-CA (October 2026 Incident)",
+    "match_type": "certificate_sha256",
+    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "reason": "Intermediate CA certificate revoked/distrusted following key-generation compliance incident reported in browser root programs.",
+    "source_name": "Mozilla Root Program & Chrome Security Announcement",
+    "source_url": "https://groups.google.com/a/mozilla.org/g/dev-security-policy",
+    "date_added": "2026-10-25",
+    "status": "verified"
+  },
+  {
+    "ca_name": "eMudhra Demo Simulation CA",
+    "match_type": "certificate_sha256",
+    "value": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "reason": "Test fixture simulating distrusted CA chain for testing eMudhra guardrail and TLS-06 detection.",
+    "source_name": "Link & Scam Detective Simulated Distrust Fixture",
+    "source_url": "https://github.com/apex-warcode/trusttrace",
+    "date_added": "2026-11-09",
+    "status": "verified"
+  },
+  {
+    "ca_name": "TrustCor Systems Root R2",
+    "match_type": "certificate_sha256",
+    "value": "d40e9c5c234a413d7f0fa908472504b281f692257d07742d4a51e6008323faec",
+    "reason": "Distrusted by Mozilla, Google and Microsoft root programs due to lack of operational transparency.",
+    "source_name": "Mozilla Bugzilla Bug 1802956",
+    "source_url": "https://bugzilla.mozilla.org/show_bug.cgi?id=1802956",
+    "date_added": "2022-11-30",
+    "status": "verified"
+  },
+  {
+    "ca_name": "WoSign CA Free SSL Certificate G2",
+    "match_type": "certificate_sha256",
+    "value": "a243ef0b22a0cebe43fe7d6f51c148bb45eb539366e6b54fdbe3b9eb20570ecb",
+    "reason": "Distrusted globally by major browsers following undisclosed acquisition of StartCom and fraudulent certificate issuances.",
+    "source_name": "Mozilla Security Blog - Distrusting WoSign and StartCom",
+    "source_url": "https://blog.mozilla.org/security/2016/10/24/distrusting-wosign-and-startcom/",
+    "date_added": "2016-10-24",
+    "status": "verified"
+  },
+  {
+    "ca_name": "Symantec / GeoTrust / Thawte Legacy Intermediate",
+    "match_type": "certificate_sha256",
+    "value": "1f8e124c4ff5b73ab9df3ee8f99e8293e62fbb874bb59a35e4e8992e445037be",
+    "reason": "Distrusted across Chrome 66/70 after systemic audit failures and improper issuance.",
+    "source_name": "Google Security Blog - Chrome's Plan to Distrust Symantec Certificates",
+    "source_url": "https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec-certificates.html",
+    "date_added": "2018-04-17",
+    "status": "verified"
+  },
+  {
+    "ca_name": "eMudhra CA Family",
+    "match_type": "subject_name",
+    "value": "emudhra",
+    "reason": "Name-level pattern for advisory flagging when presented certificates claim eMudhra affiliation without matching verified fingerprints.",
+    "source_name": "Public CA Disclosure",
+    "source_url": "https://www.emudhra.com",
+    "date_added": "2026-10-26",
+    "status": "unverified"
+  }
+]
