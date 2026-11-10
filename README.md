@@ -1,6 +1,5 @@
 # TrustTrace: Link & Scam Detective
 **AI-Powered Web Threat Detection & Digital Trust Intelligence**  
-*Team APEX WARCODE*    
 *Domains: AI · Cybersecurity · Web3*
 
 ---
@@ -141,30 +140,14 @@ TrustTrace strictly satisfies every single hard constraint mandated by the HackM
 
 ---
 
-## 6. Pre-Packaged Demo Cases (3+3 Quick Tests)
-
-The frontend provides one-click buttons for the complete HackMatrix demonstration suite:
-
-| ID | Category | Target Input | Expected Verdict | Primary Signals Triggered |
-| :---: | :---: | :--- | :---: | :--- |
-| **B1** | Benign Link | `https://sbi.co.in` | **Low Risk** | Official domain match (`MIT-01`), DigiCert CA, HSTS, clean threat feeds. |
-| **B2** | Benign Link | `https://github.com` | **Low Risk** | High evidence coverage (95%), valid TLS, CSP & X-Frame-Options headers. |
-| **B3** | Benign Link | `https://wikipedia.org` | **Low Risk** | Global allowlist, clean reputation, non-commercial public domain. |
-| **S1** | Phishing Link | `http://sbi-kyc-update.com/login` | **High Risk** | Brand impersonation (`IMP-01`), phishing keyword (`STR-01`), HTTP only. |
-| **S2** | Punycode Link | `http://xn--gogl-qqa.com/login` | **Suspicious** | Punycode confusable characters (`IMP-04`) mimicking Google. |
-| **S3** | Scam Message | `"SBI ALERT: Account blocked within 2 hours..."` | **High Risk** | Urgent suspension (`MSG-01`), PAN lure (`MSG-04`), extracted unverified link. |
-| **SIM** | CA Distrust | `https://simulated-distrusted-ca.test.local` | **High Risk** | eMudhra distrust list match (`TLS-06`), triggering High Risk floor. |
-
----
-
-## 7. How to Run Locally
+## 6. How to Run Locally
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+ & npm
 - Git
 
-### 7.1 Backend Setup
+### 6.1 Backend Setup
 ```powershell
 # 1. Clone repository
 git clone https://github.com/somnathpal/trusttrace.git
@@ -189,7 +172,7 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 API Documentation will be live at: `http://127.0.0.1:8000/docs`
 
-### 7.2 Frontend Dashboard Setup
+### 6.2 Frontend Dashboard Setup
 ```powershell
 # From project root
 cd frontend
@@ -202,7 +185,7 @@ npm run dev
 ```
 Open your browser at: `http://localhost:3000`
 
-### 7.3 Smart Contract (Hardhat)
+### 6.3 Smart Contract (Hardhat)
 ```powershell
 # From project root
 cd contracts
@@ -220,7 +203,7 @@ npx hardhat run scripts/deploy.js --network localhost
 
 ---
 
-## 8. Honest Limitations & Scope Boundaries
+## 7. Honest Limitations & Scope Boundaries
 
 While TrustTrace provides industry-leading heuristic, cryptographic, and AI protections, no automated system can guarantee 100% safety. Known limitations include:
 1. **Dynamic Cloaking & Geofencing**: Advanced phishing kits that serve benign pages to automated scanners and residential IPs cannot be detected via passive external GET requests alone.
@@ -230,7 +213,7 @@ While TrustTrace provides industry-leading heuristic, cryptographic, and AI prot
 
 ---
 
-## 9. Testing & Quality Assurance Summary
+## 8. Testing & Quality Assurance Summary
 
 The entire platform is backed by an automated 57-test suite spanning all 10 architectural phases. Full test logs, edge case analyses, and false positive evaluations are documented in:  
 📄 **[`docs/TESTING_REPORT.md`](docs/TESTING_REPORT.md)**
@@ -242,12 +225,12 @@ The entire platform is backed by an automated 57-test suite spanning all 10 arch
 
 ---
 
-## 10. Threat Intelligence Licensing & Attribution
+## 9. Threat Intelligence Licensing & Attribution
 - **URLhaus by abuse.ch**: Threat intelligence indicators utilized under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
 - **National Vulnerability Database & CA Distrust Lists**: Based on public Chromium / Mozilla security advisories.
 - **Google Gemini API**: Utilized in accordance with Google Generative AI Developer Terms of Service.
 
 ---
-**APEX WARCODE — HackMatrix 2026**  
+## 10. **APEX WARCODE**  
 *Lead Developer: Somnath Pal*  
 *Protecting the decentralized web with cryptographic proof and transparent intelligence.*
