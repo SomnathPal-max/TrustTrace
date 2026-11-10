@@ -1,8 +1,11 @@
 "use client";
 import React from "react";
-import { Shield, Lock, Database, Cpu, ExternalLink, Terminal } from "lucide-react";
+import { Shield, Lock, Database, Cpu, ExternalLink, Terminal, GitBranch } from "lucide-react";
+import { API_BASE } from "@/lib/api";
 
 export default function Footer() {
+  const docsUrl = `${API_BASE}/docs`;
+  const redocUrl = `${API_BASE}/redoc`;
   return (
     <footer className="mt-20 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-[#0d0d10] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -83,7 +86,7 @@ export default function Footer() {
               <div className="pt-2 space-y-2">
                 <div>
                   <a
-                    href="http://localhost:8000/docs"
+                    href={docsUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
@@ -95,13 +98,25 @@ export default function Footer() {
                 </div>
                 <div>
                   <a
-                    href="http://localhost:8000/redoc"
+                    href={redocUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline"
                   >
                     <Terminal className="w-3.5 h-3.5" />
                     API Reference (ReDoc)
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="https://github.com/SomnathPal-max/TrustTrace"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:underline"
+                  >
+                    <GitBranch className="w-3.5 h-3.5" />
+                    GitHub Source Repository
                     <ExternalLink className="w-3 h-3" />
                   </a>
                 </div>

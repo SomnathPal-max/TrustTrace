@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 /**
  * @title ThreatRegistry
- * @dev Cryptographic commitment registry for Link & Scam Detective (HackMatrix 2026).
+ * @dev Cryptographic commitment registry for Link & Scam Detective.
  * Strictly preserves privacy: stores ONLY hashes, timestamps, addresses, and status codes.
  * Zero string, PII, or raw URL storage (HC-07 & HC-08).
  */

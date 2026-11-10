@@ -5,7 +5,7 @@
 ---
 
 ## 1. Executive Summary & Elevator Pitch
-**TrustTrace (Link & Scam Detective)** is a dual-input security analysis platform that evaluates suspicious links and scam messages using multi-layer heuristics, DNS and RDAP telemetry, TLS certificate inspection, and authoritative threat intelligence. The system employs prompt injection-defended AI to synthesize plain-English explanations without hallucinated verdicts, and cryptographically anchors every report onto an EVM smart contract for tamper-evident verification while maintaining strict off-chain privacy. Built for HackMatrix 2026 by team **APEX WARCODE**, TrustTrace delivers transparent, explainable, and provable cyber defense for the modern web.
+**TrustTrace (Link & Scam Detective)** is a dual-input security analysis platform that evaluates suspicious links and scam messages using multi-layer heuristics, DNS and RDAP telemetry, TLS certificate inspection, and authoritative threat intelligence. The system employs prompt injection-defended AI to synthesize plain-English explanations without hallucinated verdicts, and cryptographically anchors every report onto an EVM smart contract for tamper-evident verification while maintaining strict off-chain privacy. TrustTrace delivers transparent, explainable, and provable cyber defense for the modern web.
 
 ---
 
@@ -47,7 +47,7 @@ flowchart TD
 
 ## 3. The 16 Hard Constraints Compliance Matrix
 
-TrustTrace strictly satisfies every single hard constraint mandated by the HackMatrix 2026 specification:
+TrustTrace strictly satisfies every single hard constraint mandated by the specification:
 
 | Constraint | Requirement | TrustTrace Implementation & Proof |
 | :--- | :--- | :--- |
@@ -140,25 +140,41 @@ TrustTrace strictly satisfies every single hard constraint mandated by the HackM
 
 ---
 
-## 6. How to Run Locally
+## 6. Pre-Packaged Demo Cases (3+3 Quick Tests)
+
+The frontend provides one-click buttons for the complete demonstration benchmark suite:
+
+| ID | Category | Target Input | Expected Verdict | Primary Signals Triggered |
+| :---: | :---: | :--- | :---: | :--- |
+| **B1** | Benign Link | `https://sbi.co.in` | **Low Risk** | Official domain match (`MIT-01`), DigiCert CA, HSTS, clean threat feeds. |
+| **B2** | Benign Link | `https://github.com` | **Low Risk** | High evidence coverage (95%), valid TLS, CSP & X-Frame-Options headers. |
+| **B3** | Benign Link | `https://wikipedia.org` | **Low Risk** | Global allowlist, clean reputation, non-commercial public domain. |
+| **S1** | Phishing Link | `http://sbi-kyc-update.com/login` | **High Risk** | Brand impersonation (`IMP-01`), phishing keyword (`STR-01`), HTTP only. |
+| **S2** | Punycode Link | `http://xn--gogl-qqa.com/login` | **Suspicious** | Punycode confusable characters (`IMP-04`) mimicking Google. |
+| **S3** | Scam Message | `"SBI ALERT: Account blocked within 2 hours..."` | **High Risk** | Urgent suspension (`MSG-01`), PAN lure (`MSG-04`), extracted unverified link. |
+| **SIM** | CA Distrust | `https://simulated-distrusted-ca.test.local` | **High Risk** | eMudhra distrust list match (`TLS-06`), triggering High Risk floor. |
+
+---
+
+## 7. How to Run Locally
 
 ### Prerequisites
 - Python 3.11+
 - Node.js 18+ & npm
 - Git
 
-### 6.1 Backend Setup
+### 7.1 Backend Setup
 ```powershell
 # 1. Clone repository
-git clone https://github.com/somnathpal/trusttrace.git
-cd trusttrace
+git clone https://github.com/SomnathPal-max/TrustTrace.git
+cd TrustTrace
 
 # 2. Setup Python virtual environment
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
 # 3. Install backend dependencies
-pip install -r backend/requirements.txt
+pip install -r requirements.txt
 
 # 4. Configure environment variables
 copy .env.example .env
@@ -172,7 +188,7 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 API Documentation will be live at: `http://127.0.0.1:8000/docs`
 
-### 6.2 Frontend Dashboard Setup
+### 7.2 Frontend Dashboard Setup
 ```powershell
 # From project root
 cd frontend
@@ -185,7 +201,7 @@ npm run dev
 ```
 Open your browser at: `http://localhost:3000`
 
-### 6.3 Smart Contract (Hardhat)
+### 7.3 Smart Contract (Hardhat)
 ```powershell
 # From project root
 cd contracts
@@ -203,7 +219,7 @@ npx hardhat run scripts/deploy.js --network localhost
 
 ---
 
-## 7. Honest Limitations & Scope Boundaries
+## 8. Honest Limitations & Scope Boundaries
 
 While TrustTrace provides industry-leading heuristic, cryptographic, and AI protections, no automated system can guarantee 100% safety. Known limitations include:
 1. **Dynamic Cloaking & Geofencing**: Advanced phishing kits that serve benign pages to automated scanners and residential IPs cannot be detected via passive external GET requests alone.
@@ -213,7 +229,7 @@ While TrustTrace provides industry-leading heuristic, cryptographic, and AI prot
 
 ---
 
-## 8. Testing & Quality Assurance Summary
+## 9. Testing & Quality Assurance Summary
 
 The entire platform is backed by an automated 57-test suite spanning all 10 architectural phases. Full test logs, edge case analyses, and false positive evaluations are documented in:  
 📄 **[`docs/TESTING_REPORT.md`](docs/TESTING_REPORT.md)**
@@ -225,12 +241,10 @@ The entire platform is backed by an automated 57-test suite spanning all 10 arch
 
 ---
 
-## 9. Threat Intelligence Licensing & Attribution
+## 10. Threat Intelligence Licensing & Attribution
 - **URLhaus by abuse.ch**: Threat intelligence indicators utilized under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
 - **National Vulnerability Database & CA Distrust Lists**: Based on public Chromium / Mozilla security advisories.
 - **Google Gemini API**: Utilized in accordance with Google Generative AI Developer Terms of Service.
 
 ---
-## 10. **APEX WARCODE**  
-*Lead Developer: Somnath Pal*  
-*Protecting the decentralized web with cryptographic proof and transparent intelligence.*
+**TrustTrace Platform** — *Protecting the modern web with cryptographic proof and transparent intelligence.*

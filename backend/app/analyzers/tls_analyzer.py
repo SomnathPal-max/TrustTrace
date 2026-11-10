@@ -104,16 +104,21 @@ class TLSAnalyzer:
         """
         trust_result = "trusted"
         
-        # 1. Strict verified handshake
+        # 1. Strict verified handshake (validates CA signature chain against root trust store)
         strict_ctx = ssl.create_default_context()
+        # Decouple hostname checking from chain verification so SAN mismatches (TLS-02) do not trigger TLS-03
+        strict_ctx.check_hostname = False
         try:
             with socket.create_connection((connect_ip, port), timeout=4.0) as sock:
                 with strict_ctx.wrap_socket(sock, server_hostname=hostname) as ssock:
                     pass
         except ssl.SSLCertVerificationError as e:
-            if "self-signed" in str(e).lower() or "self signed" in str(e).lower():
+            err_msg = str(e).lower()
+            if "expired" in err_msg or "not yet valid" in err_msg or getattr(e, "verify_code", 0) in (9, 10):
+                trust_result = "expired"
+            elif "self-signed" in err_msg or "self signed" in err_msg:
                 trust_result = "self_signed"
-            elif "unable to get local issuer certificate" in str(e).lower() or "incomplete" in str(e).lower():
+            elif "unable to get local issuer certificate" in err_msg or "incomplete" in err_msg:
                 trust_result = "incomplete_chain"
             else:
                 trust_result = "unknown_issuer"
@@ -130,11 +135,43 @@ class TLSAnalyzer:
                 with unverified_ctx.wrap_socket(sock, server_hostname=hostname) as ssock:
                     # Get peer certificate DER
                     leaf_der = ssock.getpeercert(binary_form=True)
-                    # Get verified chain if available
                     chain_ders = [leaf_der]
-                    verified_chain = ssock.get_verified_chain() if hasattr(ssock, "get_verified_chain") else None
-                    if verified_chain:
-                        chain_ders = [c.public_bytes(serialization.Encoding.DER) if hasattr(c, "public_bytes") else c for c in verified_chain]
+
+                    # 1. Try Python 3.13+ get_verified_chain
+                    if hasattr(ssock, "get_verified_chain"):
+                        try:
+                            verified_chain = ssock.get_verified_chain()
+                            if verified_chain:
+                                chain_ders = [c.public_bytes(serialization.Encoding.DER) if hasattr(c, "public_bytes") else c for c in verified_chain]
+                        except Exception:
+                            pass
+
+                    # 2. Try Python 3.13+ get_unverified_chain
+                    if len(chain_ders) <= 1 and hasattr(ssock, "get_unverified_chain"):
+                        try:
+                            unverified_chain = ssock.get_unverified_chain()
+                            if unverified_chain:
+                                chain_ders = [c.public_bytes(serialization.Encoding.DER) if hasattr(c, "public_bytes") else c for c in unverified_chain]
+                        except Exception:
+                            pass
+
+                    # 3. Intermediate discovery via Authority Information Access (AIA) caIssuers fallback
+                    if len(chain_ders) <= 1:
+                        try:
+                            leaf_obj = x509.load_der_x509_certificate(leaf_der)
+                            aia_ext = leaf_obj.extensions.get_extension_for_oid(x509.oid.ExtensionOID.AUTHORITY_INFORMATION_ACCESS)
+                            for desc in aia_ext.value:
+                                if desc.access_method == x509.oid.AuthorityInformationAccessOID.CA_ISSUERS:
+                                    ca_url = str(desc.access_location.value)
+                                    if ca_url.startswith("http://"):
+                                        req = urllib.request.Request(ca_url, headers={"User-Agent": "TrustTrace-Bot/1.0"})
+                                        with urllib.request.urlopen(req, timeout=3.0) as ca_resp:
+                                            if ca_resp.status == 200:
+                                                chain_ders.append(ca_resp.read())
+                                                break
+                        except Exception:
+                            pass
+
                     return chain_ders, trust_result, True
         except Exception:
             return None, "unreachable", False
@@ -347,7 +384,7 @@ class TLSAnalyzer:
             ))
 
         # 3. TLS-03: Trust result (self-signed, unknown issuer, incomplete chain)
-        if trust_result != "trusted":
+        if trust_result in ("unknown_issuer", "self_signed", "incomplete_chain"):
             findings.append(Finding(
                 id="F-TLS-03",
                 signal_id="TLS-03",

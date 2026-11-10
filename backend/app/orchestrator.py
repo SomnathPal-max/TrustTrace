@@ -215,8 +215,34 @@ def run_scan_pipeline(report_id: str, request: ScanRequest, db: Session):
                     short_note="DNS resolution failed."
                 ))
 
-            # Step 3: Following redirects (Safe HTTP Client)
+            # Step 3: Checking threat intelligence (prior to any outbound fetch per HC-05)
             job_runner.update_step(report_id, SCAN_STEPS[2])
+            t_intel = time.time()
+            intel_res = threat_intel_client.analyze(
+                norm["normalized_url"],
+                norm["host"],
+                norm["registrable_domain"]
+            )
+            all_findings.extend(intel_res["findings"])
+            threat_intel_summary = intel_res["summary"]
+
+            if threat_intel_summary.feeds_answered:
+                completed_groups.append("Threat intelligence")
+                all_checks.append(CheckRecord(
+                    check_id="CHK-THREAT-INTEL",
+                    status="flagged" if intel_res["findings"] else "passed",
+                    duration_ms=int((time.time() - t_intel) * 1000),
+                    short_note=f"Threat intel completed with {len(intel_res['findings'])} match(es)."
+                ))
+            else:
+                unavailable_groups.append("Threat intelligence")
+
+            # Check if outbound fetch should be short-circuited
+            is_confirmed_malicious = any(f.signal_id in ("INT-01", "INT-03") for f in intel_res["findings"])
+            short_circuit_fetch = intel_res.get("short_circuit_fetch", False) or is_confirmed_malicious
+
+            # Step 4: Following redirects (Safe HTTP Client with IP pinning)
+            job_runner.update_step(report_id, SCAN_STEPS[3])
             redirect_chain = []
             final_headers = {}
             final_url = norm["normalized_url"]
@@ -224,7 +250,16 @@ def run_scan_pipeline(report_id: str, request: ScanRequest, db: Session):
 
             is_simulation = (norm["host"] == "simulated-distrusted-ca.local")
 
-            if dom_res["dns_available"] and not is_simulation:
+            if short_circuit_fetch:
+                # Confirmed Malicious Short-Circuit: Halt outbound HTTP requests per CTRL-MALICIOUS-SHORTCIRCUIT
+                unavailable_groups.append("Redirect and fetch")
+                all_checks.append(CheckRecord(
+                    check_id="CHK-REDIRECT-FETCH",
+                    status="skipped",
+                    duration_ms=0,
+                    short_note="HTTP fetch short-circuited: target confirmed malicious on authoritative threat feed."
+                ))
+            elif dom_res["dns_available"] and not is_simulation:
                 t_fetch = time.time()
                 http_res = safe_client.get(norm["normalized_url"])
                 redirect_chain = http_res.redirect_chain
@@ -252,8 +287,8 @@ def run_scan_pipeline(report_id: str, request: ScanRequest, db: Session):
             else:
                 unavailable_groups.append("Redirect and fetch")
 
-            # Step 4: Inspecting certificate & Security headers
-            job_runner.update_step(report_id, SCAN_STEPS[3])
+            # Step 5: Inspecting certificate & Security headers
+            job_runner.update_step(report_id, SCAN_STEPS[4])
             t_tls = time.time()
             tls_res = tls_analyzer.analyze(
                 norm["host"],
@@ -300,28 +335,6 @@ def run_scan_pipeline(report_id: str, request: ScanRequest, db: Session):
                 ))
             else:
                 unavailable_groups.append("Security headers")
-
-            # Step 5: Checking threat intelligence
-            job_runner.update_step(report_id, SCAN_STEPS[4])
-            t_intel = time.time()
-            intel_res = threat_intel_client.analyze(
-                norm["normalized_url"],
-                norm["host"],
-                norm["registrable_domain"]
-            )
-            all_findings.extend(intel_res["findings"])
-            threat_intel_summary = intel_res["summary"]
-
-            if threat_intel_summary.feeds_answered:
-                completed_groups.append("Threat intelligence")
-                all_checks.append(CheckRecord(
-                    check_id="CHK-THREAT-INTEL",
-                    status="flagged" if intel_res["findings"] else "passed",
-                    duration_ms=int((time.time() - t_intel) * 1000),
-                    short_note=f"Threat intel completed with {len(intel_res['findings'])} match(es)."
-                ))
-            else:
-                unavailable_groups.append("Threat intelligence")
 
             # Calculate Coverage & Label
             coverage = scoring_engine.calculate_coverage(completed_groups, unavailable_groups)

@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Shield, Link2, MessageSquare, Search, RefreshCw,
   QrCode, Layers, UploadCloud, Loader2, Sparkles, Activity,
   CheckCircle, AlertTriangle, ExternalLink, ChevronRight
 } from "lucide-react";
-import { startScan, pollScan, decodeQRCode, startBatchScan } from "@/lib/api";
+import { startScan, pollScan, decodeQRCode, startBatchScan, fetchSamples } from "@/lib/api";
 import { Report } from "@/types";
 import { defang } from "@/lib/defang";
 
@@ -17,6 +17,63 @@ const SCAN_STEPS = [
   "Querying threat intelligence feeds",
   "Correlating campaign indicators",
   "Synthesizing explainable AI report",
+];
+
+const FALLBACK_SAMPLES = [
+  {
+    id: "B1",
+    group: "safe-looking",
+    type: "url",
+    title: "State Bank of India (Official)",
+    value: "sbi.co.in",
+    expected_label: "Low Risk",
+    description: "Official State Bank of India portal verifying official-domain allow-list match."
+  },
+  {
+    id: "B2",
+    group: "safe-looking",
+    type: "url",
+    title: "GitHub (Official)",
+    value: "github.com",
+    expected_label: "Low Risk",
+    description: "Popular developer platform showing valid TLS certificates and low-severity headers."
+  },
+  {
+    id: "B3",
+    group: "safe-looking",
+    type: "url",
+    title: "Wikipedia (Official)",
+    value: "wikipedia.org",
+    expected_label: "Low Risk",
+    description: "Demonstrates false-positive prevention on major public informational domains."
+  },
+  {
+    id: "S1",
+    group: "suspicious",
+    type: "url",
+    title: "Fake SBI KYC Portal",
+    value: "http://sbi-kyc-update.com/login",
+    expected_label: "High Risk",
+    description: "Bank brand impersonation combined with phishing keyword in domain."
+  },
+  {
+    id: "S2",
+    group: "suspicious",
+    type: "url",
+    title: "Punycode Google Lookalike",
+    value: "http://xn--gogl-qqa.com/login",
+    expected_label: "Suspicious",
+    description: "Internationalized domain with confusable characters mimicking google."
+  },
+  {
+    id: "S3",
+    group: "suspicious",
+    type: "message",
+    title: "Urgent Bank Threat SMS",
+    value: "URGENT: Your SBI bank account will be blocked within 2 hours. Update your PAN card and Aadhaar details immediately to avoid deactivation: http://sbi-kyc-update.com/pan. We will never ask for your password.",
+    expected_label: "High Risk",
+    description: "Social engineering urgency, threat of suspension, sensitive data lure, and extracted malicious link."
+  }
 ];
 
 interface ScannerProps {
@@ -31,6 +88,26 @@ export default function Scanner({ onReport }: ScannerProps) {
   const [stepName, setStepName] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  // Cached evaluation & demo test suite
+  const [useCached, setUseCached] = useState(false);
+  const [samples, setSamples] = useState<any[]>(FALLBACK_SAMPLES);
+
+  useEffect(() => {
+    let mounted = true;
+    fetchSamples()
+      .then((data) => {
+        if (mounted && data?.demo_samples && Array.isArray(data.demo_samples)) {
+          setSamples(data.demo_samples);
+        }
+      })
+      .catch(() => {
+        // Fallback remains active
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   // QR state
   const [qrFile, setQrFile] = useState<File | null>(null);
   const [qrDecoding, setQrDecoding] = useState(false);
@@ -41,14 +118,15 @@ export default function Scanner({ onReport }: ScannerProps) {
   const [batchRunning, setBatchRunning] = useState(false);
   const [batchResults, setBatchResults] = useState<Array<{ report_id: string; target: string; status: string; report?: Report }>>([]);
 
-  const executeSingleScan = async (scanType: "url" | "message", scanVal: string) => {
+  const executeSingleScan = async (scanType: "url" | "message", scanVal: string, cachedMode?: boolean) => {
+    const isCached = cachedMode !== undefined ? cachedMode : useCached;
     setScanning(true);
     setError(null);
     setStepIdx(0);
     setStepName(SCAN_STEPS[0]);
 
     try {
-      const init = await startScan(scanType, scanVal, false);
+      const init = await startScan(scanType, scanVal, isCached);
       const rid = init.report_id;
 
       const poll = setInterval(async () => {
@@ -78,13 +156,20 @@ export default function Scanner({ onReport }: ScannerProps) {
     }
   };
 
+  const handleSampleClick = (sample: any) => {
+    const scanType = sample.type as "url" | "message";
+    setTab(scanType);
+    setValue(sample.value);
+    executeSingleScan(scanType, sample.value, useCached);
+  };
+
   const handleScan = () => {
     const v = value.trim();
     if (!v) {
       setError("Please enter a URL or message to analyze.");
       return;
     }
-    executeSingleScan(tab as "url" | "message", v);
+    executeSingleScan(tab as "url" | "message", v, useCached);
   };
 
   const handleQRFile = async (file: File) => {
@@ -97,7 +182,7 @@ export default function Scanner({ onReport }: ScannerProps) {
       const res = await decodeQRCode(file);
       setQrDecodedText(res.decoded_content);
       // Auto-trigger scan on the extracted target
-      executeSingleScan(res.input_type, res.decoded_content);
+      executeSingleScan(res.input_type, res.decoded_content, useCached);
     } catch (err: any) {
       setError(err.message || "Failed to decode QR code.");
     } finally {
@@ -400,6 +485,86 @@ export default function Scanner({ onReport }: ScannerProps) {
                 )}
               </div>
             )}
+
+            {/* Benchmark Demo Test Suite & One-Click Samples */}
+            <div className="pt-5 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-3.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded-md bg-brand-50 dark:bg-emerald-950/50 text-brand-600 dark:text-emerald-400">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
+                    Demo Test Suite & Benchmark Samples
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2.5 bg-zinc-50 dark:bg-[#18181c] px-3 py-1.5 rounded-xl border border-zinc-200/60 dark:border-zinc-800">
+                  <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                    Use Cached Telemetry (Offline Mode)
+                  </span>
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={useCached}
+                    onClick={() => setUseCached(!useCached)}
+                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                      useCached ? "bg-emerald-500" : "bg-zinc-300 dark:bg-zinc-700"
+                    }`}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                        useCached ? "translate-x-4" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                {samples.map((sample) => {
+                  const isBenign = sample.id.startsWith("B");
+                  return (
+                    <button
+                      key={sample.id}
+                      type="button"
+                      onClick={() => handleSampleClick(sample)}
+                      disabled={scanning}
+                      className="group relative flex flex-col p-3 rounded-2xl bg-zinc-50 dark:bg-[#18181c] hover:bg-zinc-100 dark:hover:bg-[#202026] border border-zinc-200/70 dark:border-zinc-800/80 hover:border-brand-500/50 dark:hover:border-emerald-500/50 transition-all text-left shadow-sm disabled:opacity-50"
+                    >
+                      <div className="flex items-center justify-between w-full mb-1">
+                        <span
+                          className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                            isBenign
+                              ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                              : "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300"
+                          }`}
+                        >
+                          {sample.id}
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                            sample.expected_label === "Low Risk"
+                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60"
+                              : sample.expected_label === "Suspicious"
+                              ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60"
+                              : "bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800/60"
+                          }`}
+                        >
+                          {sample.expected_label}
+                        </span>
+                      </div>
+                      <div className="font-bold text-xs text-zinc-900 dark:text-zinc-100 group-hover:text-brand-600 dark:group-hover:text-emerald-400 transition-colors truncate">
+                        {sample.title}
+                      </div>
+                      <div className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400 truncate mt-0.5">
+                        {sample.type === "message" ? "SMS Lure: 'URGENT: Your SBI...'" : sample.value}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Error Notification */}
             {error && (

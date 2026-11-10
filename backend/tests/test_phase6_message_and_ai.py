@@ -86,3 +86,38 @@ def test_deterministic_template_fallback():
     assert expl.generated_by == "fallback_template"
     assert "HIGH RISK" in expl.summary.upper()
     assert len(expl.recommended_actions) >= 1
+
+def test_routine_bank_debit_alert_not_suspicious():
+    msg = "Dear Customer, your A/C ending 4567 is debited by INR 2,500 on 10-Nov-2026. Transferred to UPI merchant@paytm. Balance: INR 12,000."
+    res = message_analyzer.analyze(msg)
+    assert "MSG-04" not in res["message_analysis"].signals_triggered
+    assert res["label"] in (RiskLabel.LOW_RISK, RiskLabel.INCONCLUSIVE)
+
+def test_otp_redaction_preserves_years():
+    text = "In 2026, call 9876543210. Your OTP code is 849201. Transaction date: 1999."
+    redacted, applied = message_analyzer.sanitize_and_redact(text)
+    assert "2026" in redacted
+    assert "1999" in redacted
+    assert "[OTP_OR_PIN_REDACTED]" in redacted
+
+def test_upi_versus_email_extraction():
+    text = "Contact support@sbi.co.in or pay directly to merchant@paytm or admin@domain.org"
+    entities = message_analyzer.extract_entities(text)
+    assert "support@sbi.co.in" in entities["emails"]
+    assert "admin@domain.org" in entities["emails"]
+    assert "support@sbi.co.in" not in entities["upi_ids"]
+    assert "admin@domain.org" not in entities["upi_ids"]
+    assert "merchant@paytm" in entities["upi_ids"]
+
+def test_s3_sample_triggers_msg03_with_closing_negation():
+    s3_text = (
+        "URGENT: Your SBI bank account will be blocked within 2 hours. "
+        "Update your PAN card and Aadhaar details immediately to avoid deactivation: "
+        "http://sbi-kyc-update.com/pan. We will never ask for your password."
+    )
+    res = message_analyzer.analyze(s3_text)
+    signals = set(res["message_analysis"].signals_triggered)
+    assert "MSG-01" in signals
+    assert "MSG-02" in signals
+    assert "MSG-03" in signals  # Crucial: Must trigger MSG-03 despite closing disclaimer
+    assert res["label"] == RiskLabel.HIGH_RISK

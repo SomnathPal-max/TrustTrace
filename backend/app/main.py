@@ -1,16 +1,34 @@
+import time
+from collections import defaultdict
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.core.config import settings
 from backend.app.core.logging import logger
 from backend.app.db.session import init_db
 from backend.app.api.routes import router
 
+# Sliding window in-memory rate limiter based on settings.rate_limit_per_minute
+_rate_limit_records = defaultdict(list)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Initializing database schema...")
     init_db()
     logger.info("Database initialized successfully.")
+    
+    # Load demonstration seed data for campaign correlation
+    try:
+        from backend.app.db.seed_data import seed_demo_campaigns
+        from backend.app.db.session import SessionLocal
+        db = SessionLocal()
+        seed_demo_campaigns(db)
+        db.close()
+        logger.info("Demo campaign seed indicators loaded successfully.")
+    except Exception as e:
+        logger.warning(f"Demo campaign seeding notice: {e}")
+
     yield
 
 app = FastAPI(
@@ -37,6 +55,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def rate_limiting_middleware(request: Request, call_next):
+    # Bypass health checks and API docs from rate limit
+    if request.url.path in ("/api/health", "/docs", "/redoc", "/openapi.json"):
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    window_start = now - 60.0
+
+    recent = [ts for ts in _rate_limit_records[client_ip] if ts > window_start]
+    if len(recent) >= settings.rate_limit_per_minute:
+        return JSONResponse(
+            status_code=429,
+            content={"detail": f"Rate limit exceeded. Maximum {settings.rate_limit_per_minute} requests per minute."}
+        )
+
+    recent.append(now)
+    _rate_limit_records[client_ip] = recent
+    return await call_next(request)
 
 app.include_router(router)
 

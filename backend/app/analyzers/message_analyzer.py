@@ -11,16 +11,16 @@ from backend.app.analyzers.url_analyzer import url_analyzer
 # Redaction patterns (HC-13)
 REDACT_PATTERNS = {
     "CARD_OR_AADHAAR": re.compile(r"\b(?:\d[ -]?){12,16}\b"),
-    "OTP_OR_PIN": re.compile(r"\b(?<!\w)(?:\d{4}|\d{6})(?!\w)\b"),
     "PRIVATE_KEY": re.compile(r"\b0x[a-fA-F0-9]{64}\b"),
     "SEED_PHRASE": re.compile(r"\b(?:[a-z]{3,8}\s+){11,23}[a-z]{3,8}\b", re.IGNORECASE)
 }
+OTP_PIN_REGEX = re.compile(r"\b(?<!\w)(?:\d{4}|\d{6})(?!\w)\b")
 
 # Extraction patterns
 URL_REGEX = re.compile(r"(?:https?://|hxxps?://|[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})[^\s<>\"']+", re.IGNORECASE)
 EMAIL_REGEX = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b")
 PHONE_REGEX = re.compile(r"(?:\+?91[\-\s]?)?[6-9]\d{9}\b")
-UPI_REGEX = re.compile(r"\b[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}\b")
+UPI_REGEX = re.compile(r"\b[a-zA-Z0-9.\-_]{2,64}@[a-zA-Z0-9]{2,32}\b")
 CRYPTO_REGEX = re.compile(r"\b(?:0x[a-fA-F0-9]{40}|[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{39,59})\b")
 
 # Message phrases from Appendix E
@@ -41,7 +41,8 @@ PHRASE_LISTS = {
         "do not share", "never share", "don't share", "we will never ask", "do not disclose"
     ],
     "MSG-04": [
-        "pay a processing fee", "send money", "collect request", "transfer",
+        "pay a processing fee", "send money", "collect request", "transfer to", "transfer now",
+        "wire transfer", "transfer fee", "transfer money", "transfer funds", "transfer payment",
         "gift card", "bitcoin", "usdt", "registration fee", "processing fee", "advance fee"
     ],
     "MSG-05": [
@@ -58,7 +59,7 @@ PHRASE_LISTS = {
 
 class MessageAnalyzer:
     def sanitize_and_redact(self, raw_text: str) -> Tuple[str, bool]:
-        """Strips control chars, limits to 5000 chars, and redacts sensitive tokens."""
+        """Strips control chars, limits to 5000 chars, and redacts sensitive tokens (HC-13)."""
         if not raw_text:
             return "", False
 
@@ -73,6 +74,17 @@ class MessageAnalyzer:
             if pattern.search(redacted_text):
                 redacted_text = pattern.sub(f"[{name}_REDACTED]", redacted_text)
                 redaction_applied = True
+
+        # Redact OTP / PIN: 6-digit codes or 4-digit codes, but NEVER redact 4-digit years (1900-2099)
+        def _redact_otp_pin_match(m):
+            nonlocal redaction_applied
+            val = m.group(0)
+            if len(val) == 4 and (val.startswith("19") or val.startswith("20")):
+                return val  # preserve year
+            redaction_applied = True
+            return "[OTP_OR_PIN_REDACTED]"
+
+        redacted_text = OTP_PIN_REGEX.sub(_redact_otp_pin_match, redacted_text)
 
         return redacted_text, redaction_applied
 
@@ -90,7 +102,20 @@ class MessageAnalyzer:
 
         emails = EMAIL_REGEX.findall(text)
         phones = PHONE_REGEX.findall(text)
-        upis = [u for u in UPI_REGEX.findall(text) if not EMAIL_REGEX.match(u)]
+
+        # Distinguish UPI IDs from email addresses:
+        # A UPI handle (VPA) ends with bank handles (e.g. @okaxis, @paytm, @upi) and never email TLDs (.com, .org, .in)
+        common_email_tlds = {"com", "in", "org", "net", "edu", "gov", "io", "co", "info", "xyz", "biz", "ai", "de", "uk"}
+        raw_upis = UPI_REGEX.findall(text)
+        upis = []
+        for u in raw_upis:
+            parts = u.split("@")
+            if len(parts) == 2:
+                handle = parts[1].lower()
+                if "." not in handle and handle not in common_email_tlds:
+                    if not any(u.lower() in em.lower() for em in emails):
+                        upis.append(u)
+
         cryptos = CRYPTO_REGEX.findall(text)
 
         return {
@@ -110,9 +135,6 @@ class MessageAnalyzer:
         what_checks_found: List[str] = []
 
         lower_text = raw_message.lower()
-
-        # Check negation guard for MSG-03
-        has_negation = any(neg in lower_text for neg in PHRASE_LISTS["MSG-03_NEGATION"])
 
         # Signal Matching MSG-01 to MSG-08
         # MSG-01: Urgency
@@ -155,28 +177,41 @@ class MessageAnalyzer:
                 limitation="Automated payment delinquency notices can contain threat warnings."
             ))
 
-        # MSG-03: Sensitive Request (with negation guard)
-        matched_03 = [p for p in PHRASE_LISTS["MSG-03"] if p in lower_text]
-        if matched_03:
-            if has_negation:
-                what_checks_found.append("Negation guard active: Message includes explicit warnings against sharing sensitive data.")
-            else:
-                signals_triggered.append("MSG-03")
-                what_message_says.append(f"Requests credentials or KYC update: '{', '.join(matched_03)}'")
-                findings.append(Finding(
-                    id=f"F-MSG-{len(findings)+1:02d}",
-                    signal_id="MSG-03",
-                    category=FindingCategory.CONTENT,
-                    title="Request for sensitive data or KYC update",
-                    description=f"Message requests sensitive verification or credentials: '{matched_03[0]}'.",
-                    severity=Severity.HIGH,
-                    points=25,
-                    technical_evidence={"matched_phrases": matched_03, "negation_guard_passed": True},
-                    source="message rules",
-                    potential_impact="Direct credential theft, identity fraud, or unauthorized account access.",
-                    recommendation="Never share OTPs, PINs, or PAN details via SMS or unverified web links.",
-                    limitation="Official account onboarding flows occasionally send KYC reminders."
-                ))
+        # MSG-03: Sensitive Request (scoped to sentence / clause level to prevent evasion)
+        clauses = [c.strip().lower() for c in re.split(r"[.!?\n\r]+", raw_message) if c.strip()]
+        unnegated_matched_03 = []
+        negated_matched_03 = []
+
+        for p in PHRASE_LISTS["MSG-03"]:
+            for clause in clauses:
+                if p in clause:
+                    clause_has_neg = any(neg in clause for neg in PHRASE_LISTS["MSG-03_NEGATION"])
+                    if clause_has_neg:
+                        if p not in negated_matched_03:
+                            negated_matched_03.append(p)
+                    else:
+                        if p not in unnegated_matched_03:
+                            unnegated_matched_03.append(p)
+
+        if unnegated_matched_03:
+            signals_triggered.append("MSG-03")
+            what_message_says.append(f"Requests credentials or KYC update: '{', '.join(unnegated_matched_03)}'")
+            findings.append(Finding(
+                id=f"F-MSG-{len(findings)+1:02d}",
+                signal_id="MSG-03",
+                category=FindingCategory.CONTENT,
+                title="Request for sensitive data or KYC update",
+                description=f"Message requests sensitive verification or credentials: '{unnegated_matched_03[0]}'.",
+                severity=Severity.HIGH,
+                points=25,
+                technical_evidence={"matched_phrases": unnegated_matched_03, "negation_guard_passed": True},
+                source="message rules",
+                potential_impact="Direct credential theft, identity fraud, or unauthorized account access.",
+                recommendation="Never share OTPs, PINs, or PAN details via SMS or unverified web links.",
+                limitation="Official account onboarding flows occasionally send KYC reminders."
+            ))
+        elif negated_matched_03:
+            what_checks_found.append("Negation guard active: Message includes explicit warnings against sharing sensitive data.")
 
         # MSG-04: Payment Request
         matched_04 = [p for p in PHRASE_LISTS["MSG-04"] if p in lower_text]

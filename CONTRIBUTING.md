@@ -1,8 +1,5 @@
 # Contributing to Link & Scam Detective
 
-Team: **APEX WARCODE (HM-6FC44F)**
-Hackathon: HackMatrix 2026 (48-Hour Build)
-
 ## Working Agreement & Rules
 1. Adhere strictly to the 16 Hard Constraints (HC-01 to HC-16) defined in the Implementation Brief.
 2. Never store secrets, passwords, private keys, or API tokens in git commits.

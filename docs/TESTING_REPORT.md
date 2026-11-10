@@ -1,6 +1,6 @@
-# Link & Scam Detective — Official Testing Report  
-**Team**: APEX WARCODE
-**Date**: 2026-11-09  
+# TrustTrace (Link & Scam Detective) — Official Verification & Testing Report
+**Dual-Input Passive Security & Cryptographic Verification Evaluation Matrix**  
+**Date**: 2026-11-10  
 
 ---
 
@@ -11,7 +11,7 @@
 | **B1: Benign SBI Portal** | URL: `hxxps://sbi[.]co[.]in` | **Low Risk** | **Low Risk** (95%) | Official-domain allow-list match (`MIT-01`); DigiCert TLS RSA 2048-bit valid; Strict-Transport-Security present. | *"The submitted domain 'sbi.co.in' is an exact match for the official domain of State Bank of India... No threat intelligence listings were identified within available checks."* | Zero impersonation signals raised (MIT-01); HTTPS warning banner displayed. |
 | **B2: Benign GitHub Platform** | URL: `hxxps://github[.]com` | **Low Risk** | **Low Risk** (95%) | Official match for GitHub; modern ECC secp256r1 TLS certificate; HSTS preload; zero malicious findings. | *"The submitted domain 'github.com' is an official developer platform domain with elliptic-curve cryptography..."* | Demonstrates healthy cryptographic posture and safe classification. |
 | **B3: Benign Wikipedia** | URL: `hxxps://wikipedia[.]org` | **Low Risk** | **Low Risk** (95%) | Valid Let's Encrypt wildcard certificate; 301 canonical redirect to `www.wikipedia.org`; clean threat feeds. | *"Wikipedia demonstrates false-positive handling on a highly trafficked informational website..."* | Proves free CA (Let's Encrypt) does not raise false alarms (HC-03). |
-| **S1: Fake SBI KYC Portal** | URL: `hxxp://sbi-kyc-update[.]com/login` | **High Risk** | **High Risk** (80%) | `IMP-01` (Brand keyword 'sbi' in unofficial domain); `STR-01` (Phishing keywords 'kyc', 'update'); `INT-03` (OpenPhish benchmark match). | *"This target has been classified as High Risk based on significant technical threat indicators... Interacting carries severe risk of credential theft."* | Deterministically linked to existing phishing campaign (shared IP `198.51.100.25`). |
+| **S1: Fake SBI KYC Portal** | URL: `hxxp://sbi-kyc-update[.]com/login` | **High Risk** | **High Risk** (80%) | `IMP-01` (Brand keyword 'sbi' in unofficial domain); `STR-01` (Phishing keywords 'kyc', 'update'); `INT-03` (Curated benchmark match). | *"This target has been classified as High Risk based on significant technical threat indicators... Interacting carries severe risk of credential theft."* | Deterministically linked to existing phishing campaign (shared IP `198.51.100.25`). |
 | **S2: Punycode Brand Look-alike** | URL: `hxxp://xn--gogl-qqa[.]com/login` | **Suspicious** | **Suspicious** (75%) | `IMP-04` (Punycode internationalized domain `gögl.com` visually mimicking Google Latin characters). | *"Uses characters that look visually identical to google.com to trick users... extreme caution is advised."* | Correctly capped at Suspicious due to single-category rule. |
 | **S3: Urgent Bank Panic Scam SMS** | Message: *"URGENT: Your SBI bank account will be blocked within 2 hours. Update your PAN card and Aadhaar details immediately..."* | **High Risk** | **High Risk** (80%) | `MSG-01` (Urgency: within 2 hours); `MSG-02` (Threat: will be blocked); `MSG-03` (Sensitive request: PAN update); `MSG-06` (Domain mismatch). | *"This message exhibits classic high-urgency panic-inducing social engineering tactics... Verified link analysis corroborates an active credential harvesting campaign."* | Extracted link and phone number; campaign badge links to seeded cluster. |
 

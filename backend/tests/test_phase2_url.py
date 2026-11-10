@@ -60,3 +60,18 @@ def test_typosquatting_imp02():
     res = url_analyzer.analyze("https://micros0ft.com/account")
     signals = {f.signal_id for f in res["findings"]}
     assert "IMP-02" in signals
+
+def test_brand_impersonation_false_positives_prevented():
+    # Legitimate domains that contain brand words or subdomains must not trigger brand impersonation
+    clean_domains = [
+        "https://pineapple.com",
+        "https://user.github.io",
+        "https://google.co.uk",
+        "https://amazon.co.uk",
+        "https://paypal.me/john",
+        "https://login.microsoftonline.com"
+    ]
+    for url in clean_domains:
+        res = url_analyzer.analyze(url)
+        imp_findings = [f.signal_id for f in res["findings"] if f.category.value == "Impersonation and Look-alikes"]
+        assert len(imp_findings) == 0, f"False positive detected on {url}: {imp_findings}"

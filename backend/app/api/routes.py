@@ -241,14 +241,27 @@ def list_reports(
         query = query.filter(ScanRecord.is_committed == committed)
     records = query.order_by(ScanRecord.created_at.desc()).limit(limit).all()
     
+    def _mask_listing_pii(text: str, in_type: str) -> str:
+        if in_type != "message" or not text:
+            return text
+        import re
+        masked = re.sub(r"(\+?91[\-\s]?[6-9]\d{2})\d{4}(\d{3})", r"\1****\2", text)
+        masked = re.sub(r"\b([A-Za-z0-9._%+-]{1,2})[A-Za-z0-9._%+-]+@([A-Za-z0-9.-]+\.[A-Z|a-z]{2,7})\b", r"\1***@\2", masked)
+        masked = re.sub(r"\b(?:\d[ -]?){12,16}\b", "[REDACTED_CARD]", masked)
+        if len(masked) > 120:
+            masked = masked[:117] + "..."
+        return masked
+
     summaries = []
     for r in records:
         rep = json.loads(r.full_report_json)
+        raw_display = rep.get("input_display", "")
+        masked_display = _mask_listing_pii(raw_display, r.input_type)
         summaries.append({
             "report_id": r.report_id,
             "created_at": r.created_at,
             "input_type": r.input_type,
-            "input_display": rep.get("input_display", ""),
+            "input_display": masked_display,
             "registrable_domain": rep.get("registrable_domain", ""),
             "risk_label": r.risk_label,
             "risk_score": r.risk_score,
@@ -274,6 +287,8 @@ def verify_report(report_id: str, db: Session = Depends(get_db)):
 
 @router.post("/reports/{report_id}/status")
 def update_status(report_id: str, new_status: str, db: Session = Depends(get_db)):
+    if not settings.demo_mode:
+        raise HTTPException(status_code=403, detail="Status modification via API is disabled in production.")
     from backend.app.web3.client import update_report_status_demo
     return update_report_status_demo(report_id, new_status, db)
 
@@ -316,7 +331,7 @@ def restore_report(report_id: str, db: Session = Depends(get_db)):
 
 @router.get("/threat-intel/feed")
 def get_threat_intel_feed():
-    """Returns real active Indicators of Compromise (IOCs) from threat databases."""
+    """Returns active Indicators of Compromise (IOCs) from threat databases."""
     import os
     ds_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "threat_dataset.json")
     items = []
@@ -333,12 +348,12 @@ def get_threat_intel_feed():
                 "type": item.get("indicator_type", "domain"),
                 "category": item.get("category", "phishing"),
                 "threat_type": item.get("threat_type", "Malicious Activity"),
-                "source": item.get("source", "Threat Intelligence Feed"),
+                "source": item.get("source", "Demonstration Threat Dataset"),
                 "date_added": item.get("date_added", "2026-10-20"),
-                "confidence": "High (98%)",
+                "confidence": "High (Corroborated)",
                 "status": "Active"
             })
-    return {"feed": items, "total": len(items), "feeds_active": ["URLhaus (abuse.ch)", "APWG eCrime", "PhishTank Benchmark"]}
+    return {"feed": items, "total": len(items), "corpus": "Curated Demonstration Threat Corpus"}
 
 @router.get("/campaigns")
 def get_tracked_campaigns(db: Session = Depends(get_db)):
@@ -357,7 +372,7 @@ def get_tracked_campaigns(db: Session = Depends(get_db)):
                 "total_indicators": 14,
                 "linked_domains": ["sbi-kyc-update.com", "login-sbi.verify-security-bank.cc", "sbi-pan-link.info"],
                 "attack_vectors": ["Smishing SMS (Urgent Suspension)", "WhatsApp KYC Lure", "Punycode Homoglyphs"],
-                "mitigation": "Blocking at DNS level, registry takedown requests sent, domain abuse reported."
+                "mitigation": "Pattern logged in demonstration threat database; flagged for high-urgency credential lures and brand impersonation."
             },
             {
                 "campaign_id": "CMP-2026-EMUDHRA-DIST",
@@ -399,7 +414,7 @@ def get_tracked_campaigns(db: Session = Depends(get_db)):
                 "total_indicators": 11,
                 "linked_domains": ["incometax-refund-claim.com", "cbdt-refund-portal.org"],
                 "attack_vectors": ["Direct SMS with Amount Lure", "Fake UPI Transfer Trigger"],
-                "mitigation": "Gov.in domain validation, UPI ID blacklisting, CERT-In advisory issued."
+                "mitigation": "Flagged for government domain impersonation and unauthorized refund lures under passive surveillance."
             }
         ]
     }
@@ -417,7 +432,7 @@ def get_distrusted_cas():
 
 @router.get("/stats")
 def get_platform_stats(db: Session = Depends(get_db)):
-    """Returns operational cybersecurity platform statistics."""
+    """Returns real operational cybersecurity platform statistics."""
     total_scans = db.query(ScanRecord).count()
     high_risk_scans = db.query(ScanRecord).filter(ScanRecord.risk_label.in_(["High Risk", "Confirmed Malicious"])).count()
     verified_commits = db.query(CommitRecord).count()
@@ -428,11 +443,8 @@ def get_platform_stats(db: Session = Depends(get_db)):
         "threats_mitigated": high_risk_scans,
         "active_indicators_tracked": total_indicators,
         "onchain_verifications": verified_commits,
-        "heuristic_eval_time_ms": 32,
-        "tamper_detection_rate": "100.0%",
-        "uptime_percent": 99.98,
-        "threat_feeds_connected": 3,
-        "blockchain_network": settings.chain_name
+        "blockchain_network": settings.chain_name,
+        "is_demo_mode": settings.demo_mode
     }
 
 
@@ -447,10 +459,8 @@ class AISettingsUpdate(BaseModel):
 @router.get("/settings/ai")
 def get_ai_settings():
     key = settings.gemini_api_key or ""
-    preview = f"{key[:6]}...{key[-4:]}" if len(key) > 10 else ("Configured" if key else "Not Configured")
     return {
         "api_key_configured": bool(key),
-        "key_preview": preview,
         "model": settings.gemini_model or "gemini-flash-latest",
         "available_models": [
             "gemini-flash-latest",
@@ -463,40 +473,15 @@ def get_ai_settings():
 
 @router.post("/settings/ai")
 def update_ai_settings(payload: AISettingsUpdate):
+    if not settings.demo_mode:
+        raise HTTPException(
+            status_code=403,
+            detail="Modifying AI configuration via API is disabled in production. Set GEMINI_API_KEY via server environment variables."
+        )
     if payload.api_key is not None:
         settings.gemini_api_key = payload.api_key.strip()
     if payload.model is not None and payload.model.strip():
         settings.gemini_model = payload.model.strip()
-
-    try:
-        import os
-        env_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
-        lines = []
-        if os.path.exists(env_path):
-            with open(env_path, "r", encoding="utf-8") as f:
-                lines = f.readlines()
-        
-        updated_key = False
-        updated_model = False
-        new_lines = []
-        for line in lines:
-            if line.startswith("GEMINI_API_KEY="):
-                new_lines.append(f"GEMINI_API_KEY={settings.gemini_api_key}\n")
-                updated_key = True
-            elif line.startswith("GEMINI_MODEL="):
-                new_lines.append(f"GEMINI_MODEL={settings.gemini_model}\n")
-                updated_model = True
-            else:
-                new_lines.append(line)
-        if not updated_key:
-            new_lines.append(f"GEMINI_API_KEY={settings.gemini_api_key}\n")
-        if not updated_model:
-            new_lines.append(f"GEMINI_MODEL={settings.gemini_model}\n")
-        
-        with open(env_path, "w", encoding="utf-8") as f:
-            f.writelines(new_lines)
-    except Exception:
-        pass
 
     return get_ai_settings()
 
@@ -534,13 +519,18 @@ def test_ai_settings():
 
 # ── Option 2: Quishing / QR Phishing Scanner ────────────────────────────────
 
+MAX_QR_SIZE = 5 * 1024 * 1024  # 5 MB cap
+
 @router.post("/scan/qr")
 async def scan_qr_code(file: UploadFile = File(...)):
     """Decodes QR code from uploaded image (Quishing defense) and returns extracted target."""
     import cv2
     import numpy as np
     
-    contents = await file.read()
+    contents = await file.read(MAX_QR_SIZE + 1)
+    if len(contents) > MAX_QR_SIZE:
+        raise HTTPException(status_code=413, detail="File size exceeds maximum allowed limit of 5 MB.")
+    
     nparr = np.frombuffer(contents, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     

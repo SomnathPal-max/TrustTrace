@@ -37,17 +37,17 @@
   {
     "brand": "Google",
     "keywords": ["google", "gmail"],
-    "official_domains": ["google.com", "google.co.in"]
+    "official_domains": ["google.com", "google.co.in", "google.co.uk", "google.ca", "google.de", "google.fr", "google.co.jp", "google.com.au"]
   },
   {
     "brand": "Microsoft",
     "keywords": ["microsoft", "office365", "outlook"],
-    "official_domains": ["microsoft.com", "office.com", "outlook.com", "live.com"]
+    "official_domains": ["microsoft.com", "office.com", "outlook.com", "live.com", "microsoftonline.com", "office365.com"]
   },
   {
     "brand": "Amazon",
     "keywords": ["amazon"],
-    "official_domains": ["amazon.com", "amazon.in"]
+    "official_domains": ["amazon.com", "amazon.in", "amazon.co.uk", "amazon.de", "amazon.ca", "amazon.co.jp", "amazon.com.au"]
   },
   {
     "brand": "Flipkart",
@@ -57,7 +57,7 @@
   {
     "brand": "PayPal",
     "keywords": ["paypal"],
-    "official_domains": ["paypal.com"]
+    "official_domains": ["paypal.com", "paypal.me"]
   },
   {
     "brand": "Apple",
@@ -77,7 +77,7 @@
   {
     "brand": "GitHub",
     "keywords": ["github"],
-    "official_domains": ["github.com"]
+    "official_domains": ["github.com", "github.io"]
   },
   {
     "brand": "Income Tax Department (India)",

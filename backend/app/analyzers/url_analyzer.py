@@ -175,9 +175,9 @@ class URLAnalyzer:
 
                 for kw in b_keywords:
                     # IMP-01: Exact brand keyword within registrable domain (e.g. sbi-update.com)
-                    # Use token or boundary check to prevent spurious substring match
+                    # Use token or boundary check to prevent spurious substring match (e.g. pineapple.com)
                     kw_pattern = rf"(?:^|[-_.]){re.escape(kw)}(?:[-_.]|$)"
-                    if re.search(kw_pattern, reg_second_level) or (kw in reg_second_level and len(kw) >= 4):
+                    if re.search(kw_pattern, reg_second_level):
                         findings.append(Finding(
                             id=f"F-{len(findings)+1:02d}",
                             signal_id="IMP-01",
@@ -218,7 +218,7 @@ class URLAnalyzer:
 
                     # IMP-03: Brand keyword only in subdomain or path of unrelated domain
                     sub_or_path = f"{subdomain} {path}".lower()
-                    if re.search(kw_pattern, sub_or_path) or (kw in sub_or_path and len(kw) >= 4):
+                    if re.search(kw_pattern, sub_or_path):
                         findings.append(Finding(
                             id=f"F-{len(findings)+1:02d}",
                             signal_id="IMP-03",

@@ -1,6 +1,10 @@
-const API_BASE =
+const rawBase =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   (typeof window !== "undefined" ? "" : "http://127.0.0.1:8000");
+
+export const API_BASE = (rawBase && !rawBase.startsWith("http://") && !rawBase.startsWith("https://"))
+  ? `https://${rawBase}`
+  : rawBase;
 
 export async function fetchHealth() {
   const res = await fetch(`${API_BASE}/api/health`);

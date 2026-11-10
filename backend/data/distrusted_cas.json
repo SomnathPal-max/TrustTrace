@@ -1,21 +1,11 @@
 [
   {
-    "ca_name": "eMudhra Sub-CA (October 2026 Incident)",
-    "match_type": "certificate_sha256",
-    "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "reason": "Intermediate CA certificate revoked/distrusted following key-generation compliance incident reported in browser root programs.",
-    "source_name": "Mozilla Root Program & Chrome Security Announcement",
-    "source_url": "https://groups.google.com/a/mozilla.org/g/dev-security-policy",
-    "date_added": "2026-10-25",
-    "status": "verified"
-  },
-  {
     "ca_name": "eMudhra Demo Simulation CA",
     "match_type": "certificate_sha256",
     "value": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
     "reason": "Test fixture simulating distrusted CA chain for testing eMudhra guardrail and TLS-06 detection.",
     "source_name": "Link & Scam Detective Simulated Distrust Fixture",
-    "source_url": "https://github.com/apex-warcode/trusttrace",
+    "source_url": "https://github.com/SomnathPal-max/TrustTrace",
     "date_added": "2026-11-09",
     "status": "verified"
   },

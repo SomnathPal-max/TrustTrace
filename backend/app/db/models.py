@@ -45,3 +45,6 @@ class CommitRecord(Base):
     contract_address = Column(String(64), nullable=False)
     revision = Column(Integer, nullable=False, default=1)
     committed_at = Column(String(64), nullable=False)
+    status = Column(String(32), nullable=False, default="Reported")
+    reporter = Column(String(64), nullable=False, default="0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+    is_simulated = Column(Boolean, nullable=False, default=True)

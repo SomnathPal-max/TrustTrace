@@ -140,6 +140,8 @@ class SSRFGuard:
         if not raw_url or not isinstance(raw_url, str):
             return SSRFValidationResult(is_safe=False, rule_blocked="RULE_EMPTY_URL", reason="URL is empty.")
 
+        raw_url = raw_url.strip()
+
         # Length check
         if len(raw_url) > 2048:
             return SSRFValidationResult(
@@ -156,9 +158,16 @@ class SSRFGuard:
                 reason="URL contains forbidden control characters."
             )
 
+        # Normalize URL scheme: default to https:// if no known scheme provided
+        scheme_match = re.match(r"^([a-zA-Z][a-zA-Z0-9+.-]*):", raw_url)
+        if scheme_match and scheme_match.group(1).lower() in {"file", "ftp", "gopher", "data", "javascript", "ws", "wss", "mailto", "tel"}:
+            pass
+        elif not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", raw_url):
+            raw_url = "https://" + raw_url
+
         # Parse URL
         try:
-            parsed = urllib.parse.urlsplit(raw_url.strip())
+            parsed = urllib.parse.urlsplit(raw_url)
         except Exception as e:
             return SSRFValidationResult(is_safe=False, rule_blocked="RULE_PARSE_ERROR", reason=str(e))
 
@@ -191,7 +200,15 @@ class SSRFGuard:
             )
 
         # 3. Port rule
-        port = parsed.port or (443 if scheme == "https" else 80)
+        try:
+            port = parsed.port or (443 if scheme == "https" else 80)
+        except ValueError:
+            return SSRFValidationResult(
+                is_safe=False,
+                rule_blocked="RULE_DISALLOWED_PORT",
+                reason="Invalid port specified in URL.",
+                parsed_host=hostname
+            )
         if port not in ALLOWED_PORTS:
             return SSRFValidationResult(
                 is_safe=False,

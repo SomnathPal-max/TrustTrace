@@ -1,7 +1,7 @@
 {
   "name": "trusttrace-contracts",
   "version": "1.0.0",
-  "description": "Smart contracts for TrustTrace (Link & Scam Detective) - HackMatrix 2026",
+  "description": "Smart contracts for TrustTrace (Link & Scam Detective)",
   "main": "index.js",
   "scripts": {
     "compile": "npx hardhat compile",

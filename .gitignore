@@ -49,6 +49,8 @@ yarn-error.log*
 # Hardhat
 artifacts/
 cache/
+.cache/
+contracts/.cache/
 
 # OS / Editor
 .DS_Store

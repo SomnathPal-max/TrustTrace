@@ -6,9 +6,9 @@ from datetime import datetime, timezone
 SCAN_STEPS = [
     "Validating link safety",
     "Analysing domain",
+    "Checking threat intelligence",
     "Following redirects",
     "Inspecting certificate",
-    "Checking threat intelligence",
     "Correlating with earlier reports",
     "Writing explanation"
 ]

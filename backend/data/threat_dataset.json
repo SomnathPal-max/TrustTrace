@@ -4,8 +4,8 @@
     "value": "sbi-kyc-update.com",
     "category": "banking phishing",
     "threat_type": "Phishing / Credential Harvesting",
-    "source": "Curated OpenPhish / PhishTank Community Benchmark Feed",
-    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-10-15"
   },
   {
@@ -13,8 +13,8 @@
     "value": "hdfc-netbanking-verify.in",
     "category": "banking phishing",
     "threat_type": "Phishing / Credential Harvesting",
-    "source": "Curated OpenPhish / PhishTank Community Benchmark Feed",
-    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-10-18"
   },
   {
@@ -22,8 +22,8 @@
     "value": "incometax-refund-claim.com",
     "category": "tax refund scam",
     "threat_type": "Financial Scam",
-    "source": "APWG eCrime Exchange Research Dataset",
-    "license": "Open Data License",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-09-28"
   },
   {
@@ -31,8 +31,8 @@
     "value": "indiapost-delivery-track.info",
     "category": "delivery scam",
     "threat_type": "Smishing / Malicious Redirection",
-    "source": "APWG eCrime Exchange Research Dataset",
-    "license": "Open Data License",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-10-02"
   },
   {
@@ -40,8 +40,8 @@
     "value": "paytm-kyc-alert.xyz",
     "category": "wallet kyc scam",
     "threat_type": "Credential Harvesting",
-    "source": "Curated OpenPhish / PhishTank Community Benchmark Feed",
-    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-10-20"
   },
   {
@@ -49,8 +49,8 @@
     "value": "http://sbi-kyc-update.com/login",
     "category": "banking phishing",
     "threat_type": "Active Phishing Endpoint",
-    "source": "Curated OpenPhish / PhishTank Community Benchmark Feed",
-    "license": "Creative Commons Attribution 4.0 International (CC BY 4.0)",
+    "source": "TrustTrace Curated Demonstration Benchmark",
+    "license": "Internal Test Benchmark",
     "date_added": "2026-10-15"
   }
 ]

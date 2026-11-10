@@ -109,6 +109,22 @@ def test_valid_public_domain():
     assert res.parsed_host == "example.com"
     assert res.parsed_port == 443
 
+def test_bare_domain_normalization():
+    mock_resolver = lambda host: ["93.184.216.34"]
+    guard = SSRFGuard(dns_resolver=mock_resolver)
+    
+    # Bare domain without scheme
+    res1 = guard.validate_url("github.com")
+    assert res1.is_safe
+    assert res1.parsed_host == "github.com"
+    assert res1.parsed_port == 443
+    
+    # Bare domain with port
+    res2 = guard.validate_url("sbi.co.in:8443")
+    assert res2.is_safe
+    assert res2.parsed_host == "sbi.co.in"
+    assert res2.parsed_port == 8443
+
 def test_defang_url():
     assert defang_url("http://example.com/login") == "hxxp://example[.]com/login"
     assert defang_url("https://malicious.tk/pan") == "hxxps://malicious[.]tk/pan"

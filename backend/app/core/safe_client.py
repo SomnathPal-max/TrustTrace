@@ -51,6 +51,19 @@ def get_registrable_domain_simple(hostname: str) -> str:
         return f"{parts[-3]}.{parts[-2]}.{parts[-1]}"
     return f"{parts[-2]}.{parts[-1]}"
 
+class AntiRebindingHTTPSConnection(http.client.HTTPSConnection):
+    """Pins socket to SSRF-validated IP while using original hostname for SNI and TLS cert check."""
+    def __init__(self, connect_ip: str, server_hostname: str, port: int = 443, timeout: float = 10.0, context=None):
+        super().__init__(connect_ip, port=port, timeout=timeout, context=context)
+        self.server_hostname = server_hostname
+
+    def connect(self):
+        super(http.client.HTTPSConnection, self).connect()
+        self.sock = self._context.wrap_socket(
+            self.sock,
+            server_hostname=self.server_hostname
+        )
+
 class SafeHTTPClient:
     def __init__(self, guard=None):
         self.guard = guard or ssrf_guard
@@ -186,18 +199,20 @@ class SafeHTTPClient:
         }
 
         conn = None
+        target_ip = connect_ip or parsed.hostname
         try:
             if parsed.scheme == "https":
                 context = ssl.create_default_context()
-                conn = http.client.HTTPSConnection(
-                    parsed.hostname,
+                conn = AntiRebindingHTTPSConnection(
+                    connect_ip=target_ip,
+                    server_hostname=parsed.hostname,
                     port=port,
                     timeout=REQUEST_TIMEOUT,
                     context=context
                 )
             else:
                 conn = http.client.HTTPConnection(
-                    parsed.hostname,
+                    target_ip,
                     port=port,
                     timeout=REQUEST_TIMEOUT
                 )

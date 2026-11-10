@@ -98,5 +98,14 @@ def test_web3_commit_tamper_restore_cycle():
         assert v3["result_code"] == "MATCH"
         assert v3["recomputed_hash"] == v3["onchain_hash"]
 
+        # 8. Simulate backend restart: clear in-memory dict entirely
+        from backend.app.web3.client import _MOCK_ONCHAIN_REGISTRY
+        _MOCK_ONCHAIN_REGISTRY.clear()
+
+        # After backend restart, verify MUST STILL SUCCEED and return MATCH from persistent DB!
+        v4 = verify_report_integrity(report_id, db)
+        assert v4["result_code"] == "MATCH"
+        assert v4["recomputed_hash"] == v4["onchain_hash"]
+
     finally:
         db.close()
