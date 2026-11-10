@@ -1,6 +1,5 @@
-# Link & Scam Detective — Official Testing Report
-**HackMatrix 2026 — Master Problem Statement Evaluation Matrix**  
-**Team**: APEX WARCODE (HM-6FC44F)  
+# Link & Scam Detective — Official Testing Report  
+**Team**: APEX WARCODE
 **Date**: 2026-11-09  
 
 ---
